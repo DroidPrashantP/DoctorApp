@@ -1,9 +1,11 @@
-package com.midoconline.app;
+package com.midoconline.app.ui.activities;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.midoconline.app.R;
 
 public class MainActivity extends AppCompatActivity {
 
