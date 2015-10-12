@@ -3,4 +3,20 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="title_activity_sign_in">SignInActivity</string>
+
+     <!--sign up form text-->
+    <string name="email_text">EMAIL</string>
+    <string name="name_text">NAME</string>
+    <string name="password_text">PASSWORD</string>
+    <string name="specialist_lic_text">SPECIALITY LICENCE</string>
+    <string name="request_approval_text">REQUEST APPROVAL</string>
+    <string name="sign_in_text">SIGN IN</string>
+    <!--sign up form Error text-->
+    <string name="email_error">Please provide Email</string>
+    <string name="name_error">Please provide Name</string>
+    <string name="password_error">Please provide Password</string>
+    <string name="speciality_licence_error">Please provide Speciality Licence</string>
+    <string name="title_activity_sign_in_activiity">SignInActiviity</string>
+
 </resources>
