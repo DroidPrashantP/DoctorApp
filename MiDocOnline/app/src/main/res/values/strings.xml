@@ -8,7 +8,12 @@
      <!--sign up form text-->
     <string name="email_text">EMAIL</string>
     <string name="name_text">NAME</string>
+    <string name="surname_text">SURNAME</string>
     <string name="password_text">PASSWORD</string>
+    <string name="mobile_text">MOBILE</string>
+    <string name="birthday_text">BIRTHDAY</string>
+    <string name="male_text">MALE</string>
+    <string name="female_text">FEMALE</string>
     <string name="specialist_lic_text">SPECIALITY LICENCE</string>
     <string name="request_approval_text">REQUEST APPROVAL</string>
     <string name="sign_in_text">SIGN IN</string>
@@ -17,6 +22,14 @@
     <string name="name_error">Please provide Name</string>
     <string name="password_error">Please provide Password</string>
     <string name="speciality_licence_error">Please provide Speciality Licence</string>
-    <string name="title_activity_sign_in_activiity">SignInActiviity</string>
+    <string name="surname_error">Please provide Surname</string>
+    <string name="mobile_error">Please provide Mobile Number</string>
+    <string name="birthday_error">Please provide Birthday</string>
+    <string name="title_activity_sign_in_activiity">SignInActivity</string>
+    <string name="no_internet_connection">You Don\'t have internet connection pleas try again! </string>
+
+    <string name="title_activity_splash_screen">SplashScreenActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+
 
 </resources>

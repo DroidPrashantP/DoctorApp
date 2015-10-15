@@ -3,6 +3,7 @@ package com.midoconline.app.ui.activities;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -10,9 +11,21 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.midoconline.app.R;
 import com.midoconline.app.Util.StringUtils;
 import com.midoconline.app.Util.Utils;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class SignInActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -77,5 +90,81 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
             }
         }
 
+    }
+
+    public void ExecutePostRequestForKey(){
+
+        RequestQueue queue = Volley.newRequestQueue(this);
+        StringRequest stringrequest = new StringRequest(Request.Method.POST,"http://52.74.206.181:8010/tokens/get_key", new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Utils.closeProgress();
+                Log.d(TAG, response);
+                try {
+                    JSONObject obj = new JSONObject(response);
+                    String secret_key = obj.getString("secret_key");
+                    String key = obj.getString("key");
+                    ExecutePostRequestForLogin(secret_key,key);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Utils.closeProgress();
+            }
+        }){
+            @Override
+            protected Map<String,String> getParams(){
+                Map<String,String> params = new HashMap<String, String>();
+                params.put("email",mEdtEmail.getText().toString().trim());
+                params.put("password", mEdtPassword.getText().toString().trim());
+
+                return params;
+            }
+
+            @Override
+            public Map<String, String> getHeaders()  {
+                Map<String,String> params = new HashMap<String, String>();
+                params.put("Content-Type","application/json");
+                return params;
+            }
+        };
+        queue.add(stringrequest);
+    }
+    public void ExecutePostRequestForLogin(final String secret_key, final String key){
+
+        RequestQueue queue = Volley.newRequestQueue(this);
+        StringRequest stringrequest = new StringRequest(Request.Method.POST,"http://52.74.206.181:8010/tokens.json", new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Utils.closeProgress();
+                Log.d(TAG, response);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Utils.closeProgress();
+            }
+        }){
+            @Override
+            protected Map<String,String> getParams(){
+                Map<String,String> params = new HashMap<String, String>();
+                params.put("secret_key",secret_key);
+                params.put("key", key);
+                return params;
+            }
+
+            @Override
+            public Map<String, String> getHeaders()  {
+                Map<String,String> params = new HashMap<String, String>();
+                params.put("Content-Type","application/json");
+                return params;
+            }
+        };
+        queue.add(stringrequest);
     }
 }

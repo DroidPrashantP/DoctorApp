@@ -2,6 +2,7 @@ package com.midoconline.app.Util;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.support.design.widget.Snackbar;
 import android.view.View;
 import android.view.Window;
 
@@ -36,5 +37,14 @@ public class Utils {
             progressDialog.dismiss();
             progressDialog = null;
         }
+    }
+
+    /**
+     * show snackbar
+     * @param view
+     * @param msg
+     */
+    public static void ShowSnackBar(View view, String msg){
+        Snackbar.make(view, msg, Snackbar.LENGTH_LONG).show();
     }
 }

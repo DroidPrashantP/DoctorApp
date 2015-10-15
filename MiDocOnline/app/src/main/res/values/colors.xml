@@ -1,9 +1,11 @@
 <resources>
     <!-- App theme -->
-    <color name="primary">#2196F3</color>
-    <color name="primary_dark">#1976D2</color>
-    <color name="primary_light">#BBDEFB</color>
-    <color name="accent">#FF5252</color>
+    <color name="primary">#030303</color>
+    <color name="primary_dark">#000000</color>
+    <color name="primary_light">#030303</color>
+    <color name="accent">#3b62e1</color>
+    <color name="blue">#2196F3</color>
+    <color name="blue_dark">#1976D2</color>
     <color name="primary_text">#212121</color>
     <color name="secondary_text">#727272</color>
     <color name="text">#FFFFFF</color>
@@ -17,4 +19,6 @@
     <color name="app_name">#F44336</color>
     <color name="text_white">#FFFFFF</color>
     <color name="light_grey">#5e5e5e</color>
+    <color name="red">#5e5e5e</color>
+    <color name="black_overlay">#66000000</color>
 </resources>
