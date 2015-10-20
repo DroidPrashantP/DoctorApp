@@ -1,0 +1,185 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.midoconline.app.ui.activities.MyProfileActivity">
+
+    <include
+        android:id="@+id/toolbar_wrapper"
+        layout="@layout/layout_header_file"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        />
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/toolbar_wrapper"
+        android:layout_above="@+id/bottom_layout">
+        <RelativeLayout
+            android:id="@+id/Rl_Top_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+           >
+
+            <TextView
+                android:id="@+id/text_account"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@color/blue"
+                android:gravity="center_horizontal|center_vertical"
+                android:text="DOCTOR HISTORY"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_large"
+                android:textStyle="bold" />
+
+            <TableRow
+                android:id="@+id/tableView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/text_account">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1">
+
+                    <Button
+                        android:id="@+id/btn_from"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:background="@drawable/edittext_custom_background_black"
+                        android:text="FROM"
+                        android:textStyle="bold"
+                        android:textSize="@dimen/text_size_large"
+                        android:textColor="@color/white"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="@dimen/margin_normal"/>
+
+                    <com.prolificinteractive.materialcalendarview.MaterialCalendarView
+                        android:id="@+id/calendarViewFrom"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        xmlns:app="http://schemas.android.com/apk/res-auto"
+                        app:mcv_showOtherDates="decorated_disabled"
+                        app:mcv_arrowColor="@color/white"
+                        app:mcv_selectionColor="@color/accent"
+                        app:mcv_headerTextAppearance="@style/CustomTextAppearanceMonth"
+                        app:mcv_dateTextAppearance="@style/CustomTextAppearance"
+                        app:mcv_weekDayTextAppearance="@style/CustomTextAppearance"
+                        app:mcv_weekDayLabels="@array/month_label_array"
+                        app:mcv_leftArrowMask="@drawable/arrow_left"
+                        app:mcv_rightArrowMask="@drawable/arrow_right"
+                        android:layout_below="@+id/btn_from"
+                        android:padding="5dp"
+                        android:layout_margin="@dimen/margin_normal"
+                        android:background="@drawable/btn_custom_bg_blue"
+
+                        />
+                    <!--<CalendarView-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="150dp"-->
+                        <!--android:layout_below="@+id/btn_from"-->
+                        <!--android:layout_margin="@dimen/margin_normal"-->
+                        <!--android:background="@drawable/btn_custom_bg_blue">-->
+                    <!--</CalendarView>-->
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1">
+                    <Button
+                        android:id="@+id/btn_to"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:background="@drawable/edittext_custom_background_black"
+                        android:text="TO"
+                        android:textStyle="bold"
+                        android:textSize="@dimen/text_size_large"
+                        android:textColor="@color/white"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="@dimen/margin_normal"/>
+
+                    <!--<CalendarView-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="150dp"-->
+                        <!--android:layout_below="@+id/btn_to"-->
+                        <!--android:layout_margin="@dimen/margin_normal"-->
+                        <!--android:background="@drawable/btn_custom_bg_blue">-->
+                    <!--</CalendarView>-->
+
+                    <com.prolificinteractive.materialcalendarview.MaterialCalendarView
+                        android:id="@+id/calendarView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        xmlns:app="http://schemas.android.com/apk/res-auto"
+                        app:mcv_showOtherDates="decorated_disabled"
+                        app:mcv_arrowColor="@color/white"
+                        app:mcv_selectionColor="@color/accent"
+                        app:mcv_headerTextAppearance="@style/CustomTextAppearance"
+                        app:mcv_dateTextAppearance="@style/CustomTextAppearance"
+                        app:mcv_weekDayTextAppearance="@style/CustomTextAppearance"
+                        app:mcv_weekDayLabels="@array/month_label_array"
+                        app:mcv_leftArrowMask="@drawable/arrow_left"
+                        app:mcv_rightArrowMask="@drawable/arrow_right"
+                        android:layout_below="@+id/btn_to"
+                        android:padding="5dp"
+                        android:layout_margin="@dimen/margin_normal"
+                        android:background="@drawable/btn_custom_bg_blue"
+
+                        />
+                </RelativeLayout>
+            </TableRow>
+
+
+            <include
+                android:id="@+id/include_one"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                layout="@layout/layout_custom_history_row"
+                android:layout_marginLeft="@dimen/margin_normal"
+                android:layout_marginRight="@dimen/margin_normal"
+                android:layout_below="@+id/tableView"
+                />
+
+            <include  android:layout_width="match_parent"
+                android:layout_height="120dp"
+                layout="@layout/layout_custom_history_row"
+                android:layout_marginLeft="@dimen/margin_normal"
+                android:layout_marginRight="@dimen/margin_normal"
+                android:layout_marginTop="@dimen/margin_normal"
+                android:layout_below="@+id/include_one"
+                />
+            <!--<android.support.v7.widget.RecyclerView-->
+            <!--android:id="@+id/history_recyclerView"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_below="@+id/tableView"-->
+            <!--android:layout_margin="@dimen/margin_normal"/>-->
+
+
+
+        </RelativeLayout>
+    </ScrollView>
+
+    <RelativeLayout
+        android:id="@+id/bottom_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Total $ 1500"
+            android:padding="@dimen/padding_normal"
+            android:layout_alignParentRight="true"
+            android:textColor="@color/black"
+            android:layout_marginRight="@dimen/margin_large"
+            android:textStyle="bold"/>
+
+    </RelativeLayout>
+
+</RelativeLayout>

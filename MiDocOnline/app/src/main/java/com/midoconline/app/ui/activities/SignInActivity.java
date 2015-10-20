@@ -1,8 +1,11 @@
 package com.midoconline.app.ui.activities;
 
+import android.content.Intent;
 import android.support.design.widget.TextInputLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,6 +21,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.midoconline.app.R;
+import com.midoconline.app.Util.SharePreferences;
 import com.midoconline.app.Util.StringUtils;
 import com.midoconline.app.Util.Utils;
 
@@ -33,11 +37,14 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     private EditText mEdtEmail,mEdtPassword;
     private Button mSignInBtn;
     private TextInputLayout mEmailTextInput, mPasswordTextInput;
+    private SharePreferences mSharePreferences;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
+        mSharePreferences = new SharePreferences(this);
         IntiView();
+        setToolbar();
     }
 
     private void IntiView() {
@@ -81,6 +88,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     private void validation(){
         if (StringUtils.isNotEmpty(mEdtEmail.getText().toString()) && StringUtils.isNotEmpty(mEdtPassword.getText().toString())){
             Toast.makeText(SignInActivity.this,"Sign in",Toast.LENGTH_LONG).show();
+            ExecutePostRequestForKey();
         }else {
             if (!StringUtils.isNotEmpty(mEdtEmail.getText().toString())){
                 mEmailTextInput.setError(getString(R.string.email_error));
@@ -93,23 +101,26 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     public void ExecutePostRequestForKey(){
-
+        Utils.showProgress(this);
         RequestQueue queue = Volley.newRequestQueue(this);
         StringRequest stringrequest = new StringRequest(Request.Method.POST,"http://52.74.206.181:8010/tokens/get_key", new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Utils.closeProgress();
-                Log.d(TAG, response);
-                try {
-                    JSONObject obj = new JSONObject(response);
-                    String secret_key = obj.getString("secret_key");
-                    String key = obj.getString("key");
-                    ExecutePostRequestForLogin(secret_key,key);
 
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                if (StringUtils.isNotEmpty(response)){
+                    Log.d(TAG, response);
+                    try {
+                        JSONObject obj = new JSONObject(response);
+                        String secret_key = obj.getString("secret_key");
+                        String key = obj.getString("key");
+                        mSharePreferences.setKey(secret_key);
+                        mSharePreferences.setSecretKey(key);
+                        ExecutePostRequestForLogin(secret_key,key);
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
-
             }
         }, new Response.ErrorListener() {
             @Override
@@ -129,7 +140,6 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
             @Override
             public Map<String, String> getHeaders()  {
                 Map<String,String> params = new HashMap<String, String>();
-                params.put("Content-Type","application/json");
                 return params;
             }
         };
@@ -143,10 +153,33 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
             public void onResponse(String response) {
                 Utils.closeProgress();
                 Log.d(TAG, response);
+                if (StringUtils.isNotEmpty(response)){
+                    try {
+                        JSONObject obj = new JSONObject(response);
+                        String status = obj.getString("status");
+                        if (status.equalsIgnoreCase("Success")) {
+                            mSharePreferences.setLoggedIn(true);
+                            mSharePreferences.setUserId(obj.getString("user_id"));
+                            mSharePreferences.setAuthenticationToken(obj.getString("authentication_token"));
+                            mSharePreferences.setUserEmail(mEdtEmail.getText().toString().trim());
+                            Intent intent = new Intent(SignInActivity.this, AnswerEmeregencyCallScreen.class);
+                            startActivity(intent);
+                            finish();
+
+                        }else if(status.equalsIgnoreCase("Failure")){
+                            String message = obj.getString("message");
+                            Utils.ShowDialog(message,SignInActivity.this);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                Utils.ShowDialog("Please Check your Email or Password",SignInActivity.this);
                 Utils.closeProgress();
             }
         }){
@@ -161,10 +194,16 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
             @Override
             public Map<String, String> getHeaders()  {
                 Map<String,String> params = new HashMap<String, String>();
-                params.put("Content-Type","application/json");
                 return params;
             }
         };
         queue.add(stringrequest);
+    }
+
+    public void setToolbar(){
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitleTextColor(getResources().getColor(R.color.white));
+        setSupportActionBar(toolbar);
+        final ActionBar ab = getSupportActionBar();
     }
 }

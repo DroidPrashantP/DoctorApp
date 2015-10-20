@@ -10,8 +10,11 @@ public class Constants {
     }
 
     interface UserInfoKeys {
+        String SECRET    = "secret_key";
+        String KEY = "key";
+        String AUTH_TOKEN = "authentication_token";
         String USER_NAME = "user_name";
-        String ID = "id";
+        String ID = "user_id";
         String EMAIL = "email";
         String SPECIALIST_LICENCE = "specialist_licence";
     }

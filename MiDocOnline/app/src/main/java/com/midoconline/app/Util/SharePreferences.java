@@ -50,4 +50,25 @@ public class SharePreferences implements Constants.Preferences,Constants.UserInf
         return mSharedPreferences.getString(SPECIALIST_LICENCE, "");
     }
 
+    public void setAuthenticationToken(String auth_token) {
+        mSharedPreferences.edit().putString(AUTH_TOKEN, auth_token).commit();
+    }
+    public String getAuthenticationToken() {
+        return mSharedPreferences.getString(AUTH_TOKEN, "");
+    }
+
+    public void setKey(String key) {
+        mSharedPreferences.edit().putString(KEY, key).commit();
+    }
+    public String getKey() {
+        return mSharedPreferences.getString(KEY, "");
+    }
+
+    public void setSecretKey(String key) {
+        mSharedPreferences.edit().putString(SECRET, key).commit();
+    }
+    public String getSecretKey() {
+        return mSharedPreferences.getString(SECRET, "");
+    }
+
 }

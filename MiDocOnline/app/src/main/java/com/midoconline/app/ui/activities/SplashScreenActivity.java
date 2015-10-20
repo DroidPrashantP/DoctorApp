@@ -6,27 +6,34 @@ import android.os.Handler;
 import android.view.Window;
 
 import com.midoconline.app.R;
-
-
+import com.midoconline.app.Util.SharePreferences;
 
 
 public class SplashScreenActivity extends Activity {
+
+    private SharePreferences mSharePreference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_splash_screen);
+        mSharePreference = new SharePreferences(this);
 
        new Handler().postDelayed(new Runnable() {
            @Override
            public void run() {
-            // This method will be executed once the timer is over
-               // Start your app main activity
-               Intent i = new Intent(SplashScreenActivity.this, MainActivity.class);
-               startActivity(i);
-               // close this activity
-               finish();
+
+               if (mSharePreference.isLoggedIn()) {
+                   Intent i = new Intent(SplashScreenActivity.this, AnswerEmeregencyCallScreen.class);
+                   startActivity(i);
+                   finish();
+
+               }else {
+                   Intent i = new Intent(SplashScreenActivity.this, MainActivity.class);
+                   startActivity(i);
+                   finish();
+               }
            }
        },3000);
 

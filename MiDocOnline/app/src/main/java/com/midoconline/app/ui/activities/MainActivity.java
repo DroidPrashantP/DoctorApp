@@ -1,5 +1,7 @@
 package com.midoconline.app.ui.activities;
 
+import android.content.Context;
+import android.content.Intent;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
@@ -8,106 +10,73 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.midoconline.app.R;
+import com.midoconline.app.Util.SharePreferences;
+import com.midoconline.app.Util.Utils;
 
-public class MainActivity extends AppCompatActivity {
+import java.util.ArrayList;
+import java.util.List;
+
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final int NAV_ITEMS_MAIN = R.id.group_main;
     private DrawerLayout mDrawerLayout;
+    private Button mDoctorLogIn;
+    String[] mMedicalSpecialitySpinnerValues = { "MEDICAL SPECIALIST", "Orthipedics", "Cunecology"};
+    String[] mDoctorspinnerValues = { "DOCTOR", "Dr.Smith", "Dr. Greg"};
+    Spinner mMenuSpinner;
+    private SharePreferences mSharePreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mSharePreferences = new SharePreferences(this);
+        IniTiView();
         setToolbar();
-        initializeNavigationDrawer();
     }
 
-    /**
-     * Initialize navigation drawer
-     */
-    protected void initializeNavigationDrawer() {
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+    private void  IniTiView(){
+        mDoctorLogIn = (Button) findViewById(R.id.btn_doctor_login);
+        mDoctorLogIn.setOnClickListener(this);
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        if (navigationView != null) {
-            setupDrawerContent(navigationView);
-        }
-        // set onClicklistener on user profile layout
-        findViewById(R.id.ll_user_profile).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mDrawerLayout.closeDrawers();
-//                createView(new UserProfileActivity(), R.string.profile);
-//                Intent intent = new Intent(MainActivity.this, UserProfileActivity.class);
-//                startActivity(intent);
-            }
-        });
+        Spinner mySpinner = (Spinner) findViewById(R.id.MS_spinner);
+        mySpinner.setAdapter(new MyAdapter(this, R.layout.custom_spinner_view, mMedicalSpecialitySpinnerValues));
 
-    }
-    /**
-     * Setup menus action
-     *
-     * @param navigationView
-     */
-    private void setupDrawerContent(final NavigationView navigationView) {
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(MenuItem menuItem) {
-                //if an item from extras group is clicked,refresh NAV_ITEMS_MAIN to remove previously checked item
-                navigationView.getMenu().setGroupCheckable(NAV_ITEMS_MAIN, (menuItem.getGroupId() == NAV_ITEMS_MAIN), true);
+        Spinner doctorSpinner = (Spinner) findViewById(R.id.Doctor_spinner);
+        doctorSpinner.setAdapter(new MyAdapter(this, R.layout.custom_spinner_view, mDoctorspinnerValues));
 
-//                //Update highlighted item in the navigation menu
-//                if (menuItem.getGroupId() != NAV_ITEMS_EXTRA) {
-//                    menuItem.setChecked(true);
-//                }
-
-                switch (menuItem.getItemId()) {
-                    case R.id.item_place_order:
-                        //createView(new DealFragment(), R.string.title_deal);
-                        break;
-                    case R.id.item_medical_history:
-                        // createView(new CouponFragment(), R.string.title_coupon);
-                        break;
-                    case R.id.item_share:
-                        // createView(new TopProductsFragment(), R.string.title_price_comparison);
-                        break;
-                    case R.id.item_about_us:
-                        // createView(new DealFragment(), R.string.title_stores);
-                        break;
-
-                }
-                mDrawerLayout.closeDrawers();
-                return true;
-            }
-        });
-    }
-
-    /**
-     * Create fragment view : returns on click menu item
-     *
-     * @param fragment
-     * @param title
-     */
-    private void createView(Fragment fragment, int title) {
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container_layout, fragment, getApplicationContext().getText(title).toString())
-                .addToBackStack(null)
-                .commit();
     }
 
     public void setToolbar(){
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle("MiDocOnline");
         toolbar.setTitleTextColor(getResources().getColor(R.color.white));
         setSupportActionBar(toolbar);
         final ActionBar ab = getSupportActionBar();
-        ab.setHomeAsUpIndicator(R.drawable.ic_drawer);
-        ab.setDisplayHomeAsUpEnabled(true);
-//        toolBarHeight = toolbar.getHeight()
+        ab.setDisplayHomeAsUpEnabled(false);
+
+        findViewById(R.id.nav_drawer).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mSharePreferences.isLoggedIn()) {
+                    mMenuSpinner.performClick();
+                }else {
+                    Utils.ShowDialog("Please Login First",MainActivity.this);
+                }
+            }
+        });
     }
 
     @Override
@@ -121,10 +90,43 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                mDrawerLayout.openDrawer(GravityCompat.START);
+
                 return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public void onClick(View v) {
+        if (v == mDoctorLogIn){
+            Intent intent = new Intent(MainActivity.this, AskForRegistration.class);
+            startActivity(intent);
+        }
+    }
+
+    public class MyAdapter extends ArrayAdapter<String> {
+        private String[] spinnervalue;
+        public MyAdapter(Context ctx, int txtViewResourceId, String[] objects) {
+            super(ctx, txtViewResourceId, objects);
+            this.spinnervalue = objects;
+        }
+        @Override
+        public View getDropDownView(int position, View cnvtView, ViewGroup prnt) {
+            return getCustomView(position, cnvtView, prnt);
+        }
+        @Override
+        public View getView(int pos, View cnvtView, ViewGroup prnt) {
+            return getCustomView(pos, cnvtView, prnt);
+        }
+        public View getCustomView(int position, View convertView, ViewGroup parent) {
+            LayoutInflater inflater = getLayoutInflater();
+            View mySpinner = inflater.inflate(R.layout.custom_spinner_view, parent, false);
+            TextView main_text = (TextView) mySpinner .findViewById(R.id.speciality_textView);
+            main_text.setText(spinnervalue[position]);
+            return mySpinner;
+        }
+    }
+
+
 }

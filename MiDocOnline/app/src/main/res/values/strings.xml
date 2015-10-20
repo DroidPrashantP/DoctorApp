@@ -30,6 +30,21 @@
 
     <string name="title_activity_splash_screen">SplashScreenActivity</string>
     <string name="dummy_button">Dummy Button</string>
+    <string name="title_activity_ask_for_registration">AskForRegistration</string>
+    <string name="title_activity_answer_emeregency_call_screen">AnswerEmeregencyCallScreen</string>
+    <string name="title_activity_my_profile">MyProfileActivity</string>
+    <string name="title_activity_history">HistoryActivity</string>
+    <string name="title_activity_history_chat">HistoryChatActivity</string>
+
+    <array name="month_label_array">
+        <item>SU</item>
+        <item>MO</item>
+        <item>TU</item>
+        <item>WE</item>
+        <item>TH</item>
+        <item>FR</item>
+        <item>ST</item>
+    </array>
 
 
 </resources>
