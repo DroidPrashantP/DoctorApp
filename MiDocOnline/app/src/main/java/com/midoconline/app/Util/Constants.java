@@ -17,5 +17,9 @@ public class Constants {
         String ID = "user_id";
         String EMAIL = "email";
         String SPECIALIST_LICENCE = "specialist_licence";
+        String CITY = "city";
+        String COUNTRY = "country";
+        String MOBILE = "mobile";
+        String IMAGEPATH = "user_image_url";
     }
 }

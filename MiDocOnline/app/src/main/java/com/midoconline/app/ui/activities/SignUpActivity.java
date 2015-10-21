@@ -36,9 +36,9 @@ import java.util.Map;
 
 public class SignUpActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = SignUpActivity.class.getName();
-    private EditText mEdtName, mEdtEmail,mEdtPassword,mEdtSpecialityLicence,mEdtSurname,mEdtMobile, mEdtBirthday, mEdtGender;
+    private EditText mEdtName, mEdtEmail,mEdtPassword,mEdtSpecialityLicence,mEdtCity,mEdtMobile, mEdtCountry, mEdtGender;
     private Button mRequestApproval;
-    private TextInputLayout mEmailTextInput, mNameTextInput, mPasswordTextInput, mSpecialityTextInput,mSurnameTextInput, mMobileTextInput, mBirthdayTextInput, mGenderTextInput;
+    private TextInputLayout mEmailTextInput, mNameTextInput, mPasswordTextInput, mSpecialityTextInput,mCityTextInput, mMobileTextInput, mCountryTextInput, mGenderTextInput;
     private SignUpBean mSignUpBean;
     private LinearLayout mMainView;
     private SharePreferences mSharePreferences;
@@ -58,9 +58,9 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         mEdtEmail = (EditText) findViewById(R.id.edt_email);
         mEdtPassword = (EditText) findViewById(R.id.edt_password);
         mEdtSpecialityLicence = (EditText) findViewById(R.id.edt_speciality_licence);
-//        mEdtSurname = (EditText) findViewById(R.id.edt_surname);
-//        mEdtMobile = (EditText) findViewById(R.id.edt_mobile);
-//        mEdtBirthday = (EditText) findViewById(R.id.edt_birthday);
+        mEdtCity = (EditText) findViewById(R.id.edt_city);
+        mEdtMobile = (EditText) findViewById(R.id.edt_mobile);
+        mEdtCountry = (EditText) findViewById(R.id.edt_country);
 //        mEdtGender = (EditText) findViewById(R.id.edt_birthday);
         mRequestApproval = (Button) findViewById(R.id.btn_request_approval);
         mRequestApproval.setOnClickListener(this);
@@ -68,9 +68,9 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         mNameTextInput = (TextInputLayout) findViewById(R.id.til_name);
         mPasswordTextInput = (TextInputLayout) findViewById(R.id.til_password);
         mSpecialityTextInput = (TextInputLayout) findViewById(R.id.til_speciality_licence);
-//        mSurnameTextInput = (TextInputLayout) findViewById(R.id.til_surname);
-//        mMobileTextInput = (TextInputLayout) findViewById(R.id.til_mobile);
-//        mBirthdayTextInput = (TextInputLayout) findViewById(R.id.til_birthday);
+        mCityTextInput = (TextInputLayout) findViewById(R.id.til_city);
+        mMobileTextInput = (TextInputLayout) findViewById(R.id.til_mobile);
+        mCountryTextInput = (TextInputLayout) findViewById(R.id.til_country);
 
 
     }
@@ -100,8 +100,8 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void validation(){
-        if (StringUtils.isNotEmpty(mEdtName.getText().toString())&& StringUtils.isNotEmpty(mEdtEmail.getText().toString()) && StringUtils.isNotEmpty(mEdtPassword.getText().toString())&& StringUtils.isNotEmpty(mEdtSpecialityLicence.getText().toString())){
-            mSignUpBean = new SignUpBean(mEdtName.getText().toString(),"",mEdtEmail.getText().toString(),"male","","",mEdtPassword.getText().toString(),mEdtSpecialityLicence.getText().toString());
+        if (StringUtils.isNotEmpty(mEdtName.getText().toString())&& StringUtils.isNotEmpty(mEdtEmail.getText().toString()) && StringUtils.isNotEmpty(mEdtPassword.getText().toString())&& StringUtils.isNotEmpty(mEdtSpecialityLicence.getText().toString())&& StringUtils.isNotEmpty(mEdtCity.getText().toString()) && StringUtils.isNotEmpty(mEdtCountry.getText().toString()) && StringUtils.isNotEmpty(mEdtMobile.getText().toString())){
+            mSignUpBean = new SignUpBean(mEdtName.getText().toString(),mEdtCity.getText().toString(),mEdtEmail.getText().toString(),mEdtCountry.getText().toString(),mEdtMobile.getText().toString(),mEdtPassword.getText().toString(),mEdtSpecialityLicence.getText().toString());
             if(NetworkManager.isConnectedToInternet(this)) {
                 Utils.showProgress(this);
                 ExecutePostRequest();
@@ -122,15 +122,15 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
             if (!StringUtils.isNotEmpty(mEdtSpecialityLicence.getText().toString())){
                 mSpecialityTextInput.setError(getString(R.string.speciality_licence_error));
             }
-//            if (!StringUtils.isNotEmpty(mEdtSurname.getText().toString())){
-//                mSurnameTextInput.setError(getString(R.string.surname_error));
-//            }
-//            if (!StringUtils.isNotEmpty(mEdtMobile.getText().toString())){
-//                mMobileTextInput.setError(getString(R.string.mobile_error));
-//            }
-//            if (!StringUtils.isNotEmpty(mEdtBirthday.getText().toString())){
-//                mBirthdayTextInput.setError(getString(R.string.birthday_error));
-//            }
+            if (!StringUtils.isNotEmpty(mEdtCity.getText().toString())){
+                mCityTextInput.setError(getString(R.string.city_error));
+            }
+            if (!StringUtils.isNotEmpty(mEdtMobile.getText().toString())){
+                mMobileTextInput.setError(getString(R.string.mobile_error));
+            }
+            if (!StringUtils.isNotEmpty(mEdtCountry.getText().toString())){
+                mCountryTextInput.setError(getString(R.string.country_error));
+            }
 
         }
 
@@ -161,10 +161,10 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                 params.put("email",mSignUpBean.getEmail());
                 params.put("password", mSignUpBean.getPassword());
                 params.put("licence",mSignUpBean.getSpecialize());
-//                params.put("surname",mSignUpBean.getSurname());
-//                params.put("gender",mSignUpBean.getGender());
+                params.put("city",mSignUpBean.getcity());
+                params.put("country",mSignUpBean.getcountry());
 //                params.put("dob",mSignUpBean.getBirthday());
-//                params.put("mobile_no",mSignUpBean.getMobilenumber());
+                params.put("mobile_no",mSignUpBean.getMobilenumber());
 
                 return params;
             }
@@ -192,6 +192,9 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                     mSharePreferences.setAuthenticationToken(obj.getString("authentication_token"));
                     mSharePreferences.setKey(obj.getString("key"));
                     mSharePreferences.setSecretKey(obj.getString("secret_key"));
+                    mSharePreferences.setCity(mSignUpBean.getcity());
+                    mSharePreferences.setCountry(mSignUpBean.getcountry());
+                    mSharePreferences.setMobile(mSignUpBean.getMobilenumber());
 
                     Intent intent = new Intent(SignUpActivity.this, AnswerEmeregencyCallScreen.class);
                     startActivity(intent);

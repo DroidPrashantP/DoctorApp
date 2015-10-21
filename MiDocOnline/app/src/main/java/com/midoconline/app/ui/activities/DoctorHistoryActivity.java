@@ -10,6 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.midoconline.app.R;
@@ -55,15 +56,24 @@ public class DoctorHistoryActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    public  void ClickChatHistory(View view){
+        Intent i = new Intent(DoctorHistoryActivity.this, HistoryChatActivity.class);
+        startActivity(i);
+    }
+
     public void setToolbar(){
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitleTextColor(getResources().getColor(R.color.white));
         setSupportActionBar(toolbar);
         final ActionBar ab = getSupportActionBar();
-    }
-
-    public  void ClickChatHistory(View view){
-        Intent i = new Intent(DoctorHistoryActivity.this, HistoryChatActivity.class);
-        startActivity(i);
+        ImageView nav_drawer = (ImageView) findViewById(R.id.nav_drawer);
+        nav_drawer.setImageResource(R.drawable.ic_back);
+        nav_drawer.setColorFilter(getResources().getColor(R.color.blue), android.graphics.PorterDuff.Mode.MULTIPLY);
+        nav_drawer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
     }
 }

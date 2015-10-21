@@ -12,6 +12,8 @@
     <string name="password_text">PASSWORD</string>
     <string name="mobile_text">MOBILE</string>
     <string name="birthday_text">BIRTHDAY</string>
+    <string name="city_text">CITY</string>
+    <string name="country_text">COUNTRY</string>
     <string name="male_text">MALE</string>
     <string name="female_text">FEMALE</string>
     <string name="specialist_lic_text">SPECIALITY LICENCE</string>
@@ -24,6 +26,8 @@
     <string name="speciality_licence_error">Please provide Speciality Licence</string>
     <string name="surname_error">Please provide Surname</string>
     <string name="mobile_error">Please provide Mobile Number</string>
+    <string name="city_error">Please provide City</string>
+    <string name="country_error">Please provide Country</string>
     <string name="birthday_error">Please provide Birthday</string>
     <string name="title_activity_sign_in_activiity">SignInActivity</string>
     <string name="no_internet_connection">You Don\'t have internet connection pleas try again! </string>

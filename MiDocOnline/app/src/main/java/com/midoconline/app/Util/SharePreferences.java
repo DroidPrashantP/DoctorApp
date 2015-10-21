@@ -71,4 +71,32 @@ public class SharePreferences implements Constants.Preferences,Constants.UserInf
         return mSharedPreferences.getString(SECRET, "");
     }
 
+    public void setCity(String City) {
+        mSharedPreferences.edit().putString(CITY, City).commit();
+    }
+    public String getCity() {
+        return mSharedPreferences.getString(CITY, "");
+    }
+
+    public void setCountry(String Country) {
+        mSharedPreferences.edit().putString(COUNTRY, Country).commit();
+    }
+    public String getCountry() {
+        return mSharedPreferences.getString(COUNTRY, "");
+    }
+
+    public void setMobile(String Mobile) {
+        mSharedPreferences.edit().putString(MOBILE, Mobile).commit();
+    }
+    public String getMobile() {
+        return mSharedPreferences.getString(MOBILE, "");
+    }
+
+    public void setUserThumbnail(String path) {
+        mSharedPreferences.edit().putString(IMAGEPATH, path).commit();
+    }
+    public String getUserThumbnail() {
+        return mSharedPreferences.getString(IMAGEPATH, "");
+    }
+
 }

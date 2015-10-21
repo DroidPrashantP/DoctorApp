@@ -40,25 +40,6 @@
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
-                android:id="@+id/til_surname"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_small"
-                android:visibility="gone">
-
-                <EditText
-                    android:id="@+id/edt_surname"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_xlarge"
-                    android:background="@drawable/edittext_custom_background"
-                    android:hint="@string/surname_text"
-                    android:padding="@dimen/padding_extra_normal"
-                    android:textColor="@color/white"
-                    android:textColorHint="@color/white" />
-            </android.support.design.widget.TextInputLayout>
-
-            <android.support.design.widget.TextInputLayout
                 android:id="@+id/til_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -74,25 +55,6 @@
                     android:textColor="@color/white"
                     android:textColorHint="@color/white"
                     android:inputType="textEmailAddress"/>
-            </android.support.design.widget.TextInputLayout>
-
-            <android.support.design.widget.TextInputLayout
-                android:id="@+id/til_mobile"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_small"
-                android:visibility="gone">
-
-                <EditText
-                    android:id="@+id/edt_mobile"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_normal"
-                    android:background="@drawable/edittext_custom_background"
-                    android:hint="@string/mobile_text"
-                    android:padding="@dimen/padding_extra_normal"
-                    android:textColor="@color/white"
-                    android:textColorHint="@color/white" />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -114,25 +76,6 @@
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
-                android:id="@+id/til_birthday"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_small"
-                android:visibility="gone">
-
-                <EditText
-                    android:id="@+id/edt_birthday"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_normal"
-                    android:background="@drawable/edittext_custom_background"
-                    android:hint="@string/birthday_text"
-                    android:padding="@dimen/padding_extra_normal"
-                    android:textColor="@color/white"
-                    android:textColorHint="@color/white" />
-            </android.support.design.widget.TextInputLayout>
-
-            <android.support.design.widget.TextInputLayout
                 android:id="@+id/til_speciality_licence"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -150,6 +93,66 @@
 
             </android.support.design.widget.TextInputLayout>
 
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/til_city"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:visibility="visible">
+
+                <EditText
+                    android:id="@+id/edt_city"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_xlarge"
+                    android:background="@drawable/edittext_custom_background"
+                    android:hint="@string/city_text"
+                    android:padding="@dimen/padding_extra_normal"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/white" />
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/til_country"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:visibility="visible">
+
+                <EditText
+                    android:id="@+id/edt_country"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_normal"
+                    android:background="@drawable/edittext_custom_background"
+                    android:hint="@string/country_text"
+                    android:padding="@dimen/padding_extra_normal"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/white" />
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/til_mobile"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:visibility="visible">
+
+                <EditText
+                    android:id="@+id/edt_mobile"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_normal"
+                    android:background="@drawable/edittext_custom_background"
+                    android:hint="@string/mobile_text"
+                    android:padding="@dimen/padding_extra_normal"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/white"
+                    android:inputType="number"
+                    android:maxLength="10"/>
+            </android.support.design.widget.TextInputLayout>
+
+
 
             <Button
                 android:id="@+id/btn_request_approval"
@@ -163,6 +166,12 @@
                 android:textColor="@color/white"
                 android:textSize="@dimen/text_size_large"
                 android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="100dp">
+
+            </LinearLayout>
 
         </LinearLayout>
     </ScrollView>

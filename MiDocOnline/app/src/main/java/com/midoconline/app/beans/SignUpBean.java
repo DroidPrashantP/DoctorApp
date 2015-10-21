@@ -5,21 +5,20 @@ package com.midoconline.app.beans;
  */
 public class SignUpBean {
     String name;
-    String surname;
+    String city;
     String email;
-    String gender;
+    String country;
     String mobilenumber;
     String birthday;
     String password;
     String specialize;
 
-    public SignUpBean(String name, String surname, String email, String gender, String mobilenumber, String birthday, String password, String specialize) {
+    public SignUpBean(String name, String city, String email, String country, String mobilenumber, String password, String specialize) {
         this.name = name;
-        this.surname = surname;
+        this.city = city;
         this.email = email;
-        this.gender = gender;
+        this.country = country;
         this.mobilenumber = mobilenumber;
-        this.birthday = birthday;
         this.password = password;
         this.specialize =specialize;
     }
@@ -28,16 +27,16 @@ public class SignUpBean {
         return name;
     }
 
-    public String getSurname() {
-        return surname;
+    public String getcity() {
+        return city;
     }
 
     public String getEmail() {
         return email;
     }
 
-    public String getGender() {
-        return gender;
+    public String getcountry() {
+        return country;
     }
 
     public String getMobilenumber() {
