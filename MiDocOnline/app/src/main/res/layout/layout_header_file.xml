@@ -25,7 +25,7 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_navigation"
                 android:tint="@color/white"
-                android:padding="@dimen/padding_normal"/>
+                android:padding="5dp"/>
             <Spinner
                 android:id="@+id/toolbar_spinner"
                 android:layout_width="wrap_content"

@@ -1,6 +1,8 @@
 package com.midoconline.app.ui.activities;
 
+import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.PorterDuff;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -29,7 +32,7 @@ public class AnswerEmeregencyCallScreen extends AppCompatActivity implements Vie
     private  ImageView mImgCallReceive;
     private  CheckBox  mAcceptPaymentTerms;
     private Spinner mMenuSpinner;
-    private String[] mMenuspinnerValues = { "Account", "History","Logout"};
+    private String[] mMenuspinnerValues = { "Account", "History"};
     private SharePreferences mSharePreferences;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +78,7 @@ public class AnswerEmeregencyCallScreen extends AppCompatActivity implements Vie
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            return true;
+            ShowLogoutDialog();
         }
 
         return super.onOptionsItemSelected(item);
@@ -111,7 +114,11 @@ public class AnswerEmeregencyCallScreen extends AppCompatActivity implements Vie
         mMenuSpinner = (Spinner) findViewById(R.id.toolbar_spinner);
         mMenuSpinner.setAdapter(spinnerAdapter);
 
-        findViewById(R.id.nav_drawer).setOnClickListener(new View.OnClickListener() {
+        ImageView nav_drawer = (ImageView) findViewById(R.id.nav_drawer);
+        nav_drawer.setImageResource(R.drawable.ic_navigation);
+//        nav_drawer.setColorFilter(getResources().getColor(R.color.white), android.graphics.PorterDuff.Mode.MULTIPLY);
+
+        nav_drawer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mSharePreferences.isLoggedIn()) {
@@ -159,8 +166,6 @@ public class AnswerEmeregencyCallScreen extends AppCompatActivity implements Vie
                         startActivity(i);
                         mMenuSpinner.clearFocus();
                         mMenuSpinner.setVisibility(View.GONE);
-                    }else if (position == 2){
-                        Logout();
                     }
                 }
             });
@@ -201,5 +206,29 @@ public class AnswerEmeregencyCallScreen extends AppCompatActivity implements Vie
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
+    }
+
+    /**
+     * show logout dialog
+     */
+    private void ShowLogoutDialog() {
+        final Dialog mDialog = new Dialog(this);
+        mDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        mDialog.setContentView(R.layout.layout_custom_logout_dialog);
+        mDialog.setCancelable(true);
+        mDialog.findViewById(R.id.cancel_logout_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialog.dismiss();
+            }
+        });
+        mDialog.findViewById(R.id.logout_yes_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Logout();
+                mDialog.dismiss();
+            }
+        });
+        mDialog.show();
     }
 }

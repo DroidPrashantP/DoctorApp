@@ -34,8 +34,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final int NAV_ITEMS_MAIN = R.id.group_main;
     private DrawerLayout mDrawerLayout;
     private Button mDoctorLogIn;
-    String[] mMedicalSpecialitySpinnerValues = { "MEDICAL SPECIALIST", "Orthipedics", "Cunecology"};
-    String[] mDoctorspinnerValues = { "DOCTOR", "Dr.Smith", "Dr. Greg"};
+    String[] mMedicalSpecialitySpinnerValues = { "MEDICAL SPECIALIST","Alergólogo","Cardiólogo","Cirujano General","Dermatólogo","Dentista","Endocrinólogo","Gastroenterólogo","Geriatra","Ginecólogo","Hematólogo","Hepatólogo","Medicina Interna","Nefrólogo","Neumólogo","Neurólogo","Oftalmólogo","Oncólogo","Ortopedista","Otorrinolaringólogo","Pediatra","Proctólogo","Psiquiatra","Reumatólogo","Urólogo","Urgenciólogo"};
+    String[] mDoctorspinnerValues = { "DOCTOR", "Doc 1", "Doc 2","Doc 3","Doc 4","Doc 5","Doc 6","Doc 7","Doc 8","Doc 9"};
     Spinner mMenuSpinner;
     private SharePreferences mSharePreferences;
 

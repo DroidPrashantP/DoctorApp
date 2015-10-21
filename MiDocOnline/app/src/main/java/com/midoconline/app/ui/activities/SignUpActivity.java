@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -83,16 +84,11 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                break;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -218,5 +214,14 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         toolbar.setTitleTextColor(getResources().getColor(R.color.white));
         setSupportActionBar(toolbar);
         final ActionBar ab = getSupportActionBar();
+        ImageView nav_drawer = (ImageView) findViewById(R.id.nav_drawer);
+        nav_drawer.setImageResource(R.drawable.ic_back);
+        nav_drawer.setColorFilter(getResources().getColor(R.color.blue_dark), android.graphics.PorterDuff.Mode.MULTIPLY);
+        nav_drawer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
     }
 }

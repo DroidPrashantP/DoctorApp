@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -38,6 +39,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     private Button mSignInBtn;
     private TextInputLayout mEmailTextInput, mPasswordTextInput;
     private SharePreferences mSharePreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,14 +67,10 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                break;
         }
 
         return super.onOptionsItemSelected(item);
@@ -125,6 +123,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                Utils.ShowDialog("Please Check your Email or Password",SignInActivity.this);
                 Utils.closeProgress();
             }
         }){
@@ -174,6 +173,9 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                         e.printStackTrace();
                     }
 
+                }else {
+                    Utils.ShowDialog("Please Check your Email or Password",SignInActivity.this);
+                    Utils.closeProgress();
                 }
             }
         }, new Response.ErrorListener() {
@@ -205,5 +207,14 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         toolbar.setTitleTextColor(getResources().getColor(R.color.white));
         setSupportActionBar(toolbar);
         final ActionBar ab = getSupportActionBar();
+        ImageView nav_drawer = (ImageView) findViewById(R.id.nav_drawer);
+        nav_drawer.setImageResource(R.drawable.ic_back);
+        nav_drawer.setColorFilter(getResources().getColor(R.color.blue), android.graphics.PorterDuff.Mode.MULTIPLY);
+        nav_drawer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
     }
 }
