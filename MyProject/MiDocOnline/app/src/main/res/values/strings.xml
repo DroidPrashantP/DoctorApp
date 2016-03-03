@@ -1,0 +1,367 @@
+<resources>
+    <string name="app_name">miDOConline</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_sign_in">SignInActivity</string>
+
+    <!-- Facebook -->
+    <string name="facebook_app_id">539997896164728</string>
+    <string name="facebook_login">Facebook</string>
+
+    <!--sign up form text-->
+    <string name="email_text">EMAIL</string>
+    <string name="name_text">NAME</string>
+    <string name="surname_text">SURNAME</string>
+    <string name="password_text">PASSWORD</string>
+    <string name="mobile_text">MOBILE</string>
+    <string name="birthday_text">BIRTHDAY</string>
+    <string name="city_text">CITY</string>
+    <string name="country_text">COUNTRY</string>
+    <string name="male_text">MALE</string>
+    <string name="female_text">FEMALE</string>
+    <string name="specialist_lic_text">SPECIALITY</string>
+    <string name="request_approval_text">REQUEST APPROVAL</string>
+    <string name="sign_in_text">SIGN IN</string>
+    <!--sign up form Error text-->
+    <string name="email_error">Please enter your Email</string>
+    <string name="email_pattern_error">Email is not in proper format. Please type correct email address.</string>
+    <string name="name_error">Your name is missing. Please enter your name.</string>
+    <string name="password_error">Please provide Password</string>
+    <string name="speciality_licence_error">Please provide Speciality Licence</string>
+    <string name="surname_error">Your surname is missing.</string>
+    <string name="mobile_error">Your mobile number is missing. Please enter you mobile number.</string>
+    <string name="mobile_pattern_error">Please enter 10 digit mobile number</string>
+    <string name="city_error">City name is missing.</string>
+    <string name="country_error">Your country name is missing.</string>
+    <string name="gender_error">Please provide Gender</string>
+    <string name="birthday_error">Birthday is missing.</string>
+    <string name="title_activity_sign_in_activiity">SignInActivity</string>
+    <string name="no_internet_connection">You Don\'t have internet connection pleas try again! </string>
+
+    <string name="title_activity_splash_screen">SplashScreenActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="title_activity_ask_for_registration">AskForRegistration</string>
+    <string name="title_activity_answer_emeregency_call_screen">AnswerEmeregencyCallScreen</string>
+    <string name="title_activity_my_profile">MyProfileActivity</string>
+    <string name="title_activity_history">HistoryActivity</string>
+    <string name="title_activity_history_chat">HistoryChatActivity</string>
+
+    <array name="month_label_array">
+        <item>SU</item>
+        <item>MO</item>
+        <item>TU</item>
+        <item>WE</item>
+        <item>TH</item>
+        <item>FR</item>
+        <item>ST</item>
+    </array>
+
+    <string name="logout_confirm_msg">Do you really want to logout ?</string>
+    <string name="text_yes">Yes</string>
+    <string name="text_no">Cancel</string>
+    <string name="title_activity_terms_and_condition">TermsAndConditionActivity</string>
+    <string name="title_activity_payment_option">PaymentOptionActivity</string>
+    <string name="login_by_first_user">Login First User</string>
+    <string name="login_by_second_user">Login Second User</string>
+    <string name="please_wait">Please wait</string>
+    <string name="forgot_password"><u>Forgot Password?</u></string>
+    <string name="title_activity_forgot_password">ForgotPasswordActivity</string>
+    <string name="text_Ok">Ok</string>
+    <string name="confirmpassword_text">CONFIRM PASSWORD</string>
+    <string name="confirm_password_error">Please enter password and confirm password same</string>
+    <string name="min_password_error">Please enter password at least 8 characters</string>
+    <string name="open">open</string>
+    <string name="close">closed</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="sign_up_text">Sign Up</string>
+    <string name="title_activity_edit_profile">EditProfileActivity</string>
+    <string name="title_activity_payment">PaymentActivity</string>
+
+    <!-- Stripe strings -->
+    <string name="appName">Stripe Payments Example</string>
+
+    <string name="addPayment">Add Payment Method</string>
+    <string name="paymentMethods">Payment Methods</string>
+
+    <string name="endingIn">Card ending in </string>
+    <string name="progressMessage">Creating Token&#8230;</string>
+    <string name="validationErrors">Validation Errors</string>
+
+    <string name="cardNumber">Card Number</string>
+    <string name="save">Save</string>
+    <string name="cvc">CVC</string>
+
+    <string name="ok">OK</string>
+
+    <string-array name="year_array">
+        <item>Year</item>
+        <item>2015</item>
+        <item>2016</item>
+        <item>2017</item>
+        <item>2018</item>
+        <item>2019</item>
+        <item>2020</item>
+        <item>2021</item>
+        <item>2022</item>
+        <item>2023</item>
+        <item>2024</item>
+        <item>2025</item>
+        <item>2026</item>
+        <item>2027</item>
+        <item>2028</item>
+        <item>2029</item>
+        <item>2030</item>
+        <item>2031</item>
+        <item>2032</item>
+        <item>2033</item>
+        <item>2034</item>
+        <item>2035</item>
+    </string-array>
+
+    <string-array name="month_array">
+        <item>Month</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+    </string-array>
+
+    <string-array name="height_array">
+        <item>3\'5\"</item>
+        <item>3\'6\"</item>
+        <item>3\'7\"</item>
+        <item>3\'8\"</item>
+        <item>3\'9\"</item>
+        <item>3\'10\"</item>
+        <item>3\'11\"</item>
+        <item>4\'0\"</item>
+        <item>4\'1\"</item>
+        <item>4\'2\"</item>
+        <item>4\'3\"</item>
+        <item>4\'4\"</item>
+        <item>4\'5\"</item>
+        <item>4\'6\"</item>
+        <item>4\'7\"</item>
+        <item>4\'8\"</item>
+        <item>4\'9\"</item>
+        <item>4\'10\"</item>
+        <item>4\'11\"</item>
+        <item>5\'0\"</item>
+        <item>5\'1\"</item>
+        <item>5\'2\"</item>
+        <item>5\'3\"</item>
+        <item>5\'4\"</item>
+        <item>5\'5\"</item>
+        <item>5\'6\"</item>
+        <item>5\'7\"</item>
+        <item>5\'8\"</item>
+        <item>5\'9\"</item>
+        <item>5\'10\"</item>
+        <item>5\'11\"</item>
+        <item>6\'0\"</item>
+        <item>6\'1\"</item>
+        <item>6\'2\"</item>
+        <item>6\'3\"</item>
+        <item>6\'5\"</item>
+        <item>6\'6\"</item>
+        <item>6\'7\"</item>
+        <item>6\'8\"</item>
+        <item>6\'9\"</item>
+        <item>6\'10\"</item>
+
+
+    </string-array>
+
+    <string-array name="bloodGroup_array">
+        <item>O+</item>
+        <item>O-</item>
+        <item>A+</item>
+        <item>A-</item>
+        <item>B+</item>
+        <item>B-</item>
+        <item>AB+</item>
+        <item>AB-</item>
+    </string-array>
+
+    <string-array name="weight_array">
+        <item>31</item>
+        <item>32</item>
+        <item>33</item>
+        <item>34</item>
+        <item>35</item>
+        <item>36</item>
+        <item>37</item>
+        <item>38</item>
+        <item>39</item>
+        <item>40</item>
+        <item>41</item>
+        <item>42</item>
+        <item>43</item>
+        <item>44</item>
+        <item>45</item>
+        <item>46</item>
+        <item>47</item>
+        <item>48</item>
+        <item>49</item>
+        <item>50</item>
+        <item>51</item>
+        <item>52</item>
+        <item>53</item>
+        <item>54</item>
+        <item>55</item>
+        <item>56</item>
+        <item>57</item>
+        <item>58</item>
+        <item>59</item>
+        <item>60</item>
+        <item>61</item>
+        <item>62</item>
+        <item>63</item>
+        <item>64</item>
+        <item>65</item>
+        <item>66</item>
+        <item>67</item>
+        <item>68</item>
+        <item>69</item>
+        <item>70</item>
+        <item>71</item>
+        <item>72</item>
+        <item>73</item>
+        <item>74</item>
+        <item>75</item>
+        <item>76</item>
+        <item>77</item>
+        <item>78</item>
+        <item>79</item>
+        <item>80</item>
+        <item>81</item>
+        <item>82</item>
+        <item>83</item>
+        <item>84</item>
+        <item>85</item>
+        <item>86</item>
+        <item>87</item>
+        <item>88</item>
+        <item>89</item>
+        <item>90</item>
+        <item>91</item>
+        <item>92</item>
+        <item>93</item>
+        <item>94</item>
+        <item>95</item>
+        <item>96</item>
+        <item>97</item>
+        <item>98</item>
+        <item>99</item>
+        <item>100</item>
+        <item>101</item>
+        <item>102</item>
+        <item>103</item>
+        <item>104</item>
+        <item>105</item>
+        <item>106</item>
+        <item>107</item>
+        <item>108</item>
+        <item>109</item>
+        <item>110</item>
+        <item>111</item>
+        <item>112</item>
+        <item>113</item>
+        <item>114</item>
+        <item>115</item>
+        <item>116</item>
+        <item>117</item>
+        <item>118</item>
+        <item>119</item>
+        <item>120</item>
+        <item>121</item>
+        <item>122</item>
+        <item>123</item>
+        <item>124</item>
+        <item>125</item>
+        <item>126</item>
+        <item>127</item>
+        <item>128</item>
+        <item>129</item>
+        <item>130</item>
+        <item>131</item>
+        <item>132</item>
+        <item>133</item>
+        <item>134</item>
+        <item>135</item>
+        <item>136</item>
+        <item>137</item>
+        <item>138</item>
+        <item>139</item>
+        <item>140</item>
+        <item>141</item>
+        <item>142</item>
+        <item>143</item>
+        <item>144</item>
+        <item>145</item>
+        <item>146</item>
+        <item>147</item>
+        <item>148</item>
+        <item>149</item>
+        <item>150</item>
+    </string-array>
+    <string name="title_activity_payment_signup">PaymentSignupActivity</string>
+    <string name="update_profile">Update</string>
+    <string name="notes_text">NOTES</string>
+    <string name="street_text">STREET</string>
+    <string name="pinecode_text">ZIPCODE</string>
+    <string name="licence_text">LICENCE</string>
+    <string name="title_activity_live_video_chat">LiveVideoChatActivity</string>
+    <string name="calling_dialog_title">Incoming Call</string>
+    <string name="calling_dialog_txt">Calling</string>
+
+
+    <string name="welcoming_message">Login as any user on this deviсe and another(s) users on another device</string>
+    <string name="select_user_to_call">Select Users You Want to Call</string>
+    <string name="choose_one_opponent">Choose one opponent</string>
+    <string name="service_launched">Service for listening to calls launched</string>
+    <string name="service_stopped">Service for listening to calls stopped</string>
+
+    <string name="connect">Connect...</string>
+    <string name="checking">Checking...</string>
+    <string name="connected">Connected</string>
+    <string name="disconnected">Disconnected</string>
+    <string name="hung_up_processing">Hang up call command are processing ...</string>
+    <string name="rejected">Rejected</string>
+    <string name="noAnswer">No answer</string>
+    <string name="hungUp">Hung up</string>
+    <string name="closed">Closed</string>
+    <string name="time_out">Time Out</string>
+    <string name="failed">Failed</string>
+    <string name="WIFI_DISABLED">Call was stoped because connection was lost</string>
+    <string name="NETWORK_ABSENT">Connection lost</string>
+    <string name="internet_not_connected">Please check your Internet connection</string>
+    <string name="initializing_in_chat">Initializing in chat, please wait...</string>
+    <string name="ok_button">OK</string>
+    <string name="also_on_call">Also On Call</string>
+    <string name="incoming_video_call">Video Call</string>
+    <string name="incoming_audio_call">Audio Call</string>
+    <string name="btn_video_call">Video Call</string>
+    <string name="wait_until_loading_finish">wait until loading finish</string>
+    <string name="load_opponents">Load Opponents .....</string>
+    <string name="only_peer_to_peer_calls">Only peer to peer call</string>
+    <string name="log_out_dialog_title">Logout</string>
+    <string name="log_out_dialog_message">Are sure you want to logout?</string>
+    <string name="positive_button">Yes</string>
+    <string name="negative_button">No</string>
+    <string name="btn_audio_call">Audio Call</string>
+    <string name="action_log_out">Logout</string>
+
+
+</resources>
