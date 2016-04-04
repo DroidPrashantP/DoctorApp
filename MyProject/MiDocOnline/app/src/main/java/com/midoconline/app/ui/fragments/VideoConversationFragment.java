@@ -1,15 +1,22 @@
 package com.midoconline.app.ui.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Chronometer;
 import android.widget.ImageView;
 import android.widget.ToggleButton;
 
 import com.midoconline.app.R;
 import com.midoconline.app.Util.SessionManager;
+import com.midoconline.app.Util.SharePreferences;
+import com.midoconline.app.ui.activities.MapActivity;
+import com.quickblox.chat.QBChatService;
+import com.quickblox.users.model.QBUser;
 import com.quickblox.videochat.webrtc.QBRTCClient;
 import com.quickblox.videochat.webrtc.QBRTCSession;
 import com.quickblox.videochat.webrtc.QBRTCTypes;
@@ -25,7 +32,6 @@ import org.webrtc.VideoRenderer;
  */
 public class VideoConversationFragment extends BaseConversationFragment implements View.OnClickListener, QBRTCClientVideoTracksCallbacks {
 
-
     private static final String TAG = VideoConversationFragment.class.getSimpleName();
     private QBGLVideoView localVideoView;
     private QBGLVideoView remoteVideoView;
@@ -33,11 +39,22 @@ public class VideoConversationFragment extends BaseConversationFragment implemen
     private ToggleButton switchCameraToggle;
     private ImageView imgMyCameraOff;
     private CameraState cameraState = CameraState.NONE;
+    private SharePreferences mSharePreferences;
+    private Chronometer timerABWithTimer;
+    private boolean isTimerStarted = false;
+    protected QBUser loginedUser;
+    private ImageView mapIcon;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         QBRTCClient.getInstance().addVideoTrackCallbacksListener(this);
+        mSharePreferences = new SharePreferences(getActivity());
+        if (QBChatService.isInitialized()) {
+            if (QBChatService.getInstance().isLoggedIn()) {
+                loginedUser = QBChatService.getInstance().getUser();
+    }
+        }
     }
 
     @Override
@@ -62,7 +79,7 @@ public class VideoConversationFragment extends BaseConversationFragment implemen
         Log.d(TAG, "onPause()");
         // If camera state is CameraState.ENABLED_FROM_USER or CameraState.NONE
         // than we turn off cam
-        if(cameraState != CameraState.DISABLED_FROM_USER) {
+        if (cameraState != CameraState.DISABLED_FROM_USER) {
             toggleCamera(false);
         }
 
@@ -70,7 +87,7 @@ public class VideoConversationFragment extends BaseConversationFragment implemen
     }
 
     @Override
-    protected void initViews(View view){
+    protected void initViews(View view) {
         super.initViews(view);
 
         localVideoView = (QBGLVideoView) view.findViewById(R.id.localVideoVidew);
@@ -90,6 +107,11 @@ public class VideoConversationFragment extends BaseConversationFragment implemen
         imgMyCameraOff = (ImageView) view.findViewById(R.id.imgMyCameraOff);
 
         actionButtonsEnabled(false);
+
+        mapIcon = (ImageView) view.findViewById(R.id.mapIcon);
+        mapIcon.setOnClickListener(this);
+
+        timerABWithTimer = (Chronometer) view.findViewById(R.id.timerABWithTimer);
     }
 
     @Override
@@ -182,6 +204,9 @@ public class VideoConversationFragment extends BaseConversationFragment implemen
                     }
                 }
                 break;
+            case R.id.mapIcon:
+                startActivity(new Intent(getActivity(), MapActivity.class));
+                break;
             default:
                 break;
         }
@@ -197,5 +222,20 @@ public class VideoConversationFragment extends BaseConversationFragment implemen
     public void onDestroy() {
         super.onDestroy();
         QBRTCClient.getInstance().removeVideoTrackCallbacksListener(this);
+    }
+
+    public void startTimer() {
+        if (!isTimerStarted && timerABWithTimer != null) {
+            timerABWithTimer.setBase(SystemClock.elapsedRealtime());
+            timerABWithTimer.start();
+            isTimerStarted = true;
+        }
+    }
+
+    public void stopTimer(){
+        if (timerABWithTimer != null){
+            timerABWithTimer.stop();
+            isTimerStarted = false;
+        }
     }
 }

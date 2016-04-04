@@ -19,10 +19,13 @@ import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.midoconline.app.R;
+import com.midoconline.app.Util.Constants;
 import com.midoconline.app.Util.SharePreferences;
 import com.midoconline.app.Util.Utils;
 
@@ -38,12 +41,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     String[] mDoctorspinnerValues = { "DOCTOR", "Doc 1", "Doc 2","Doc 3","Doc 4","Doc 5","Doc 6","Doc 7","Doc 8","Doc 9"};
     Spinner mMenuSpinner;
     private SharePreferences mSharePreferences;
+    private RelativeLayout mMainLayout, mcallBtnWrapper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mSharePreferences = new SharePreferences(this);
+        mMainLayout = (RelativeLayout) findViewById(R.id.content);
         IniTiView();
         setToolbar();
     }
@@ -52,11 +57,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mDoctorLogIn = (Button) findViewById(R.id.btn_doctor_login);
         mDoctorLogIn.setOnClickListener(this);
 
+        mcallBtnWrapper = (RelativeLayout) findViewById(R.id.callBtn_wrapper);
+        mcallBtnWrapper.setOnClickListener(this);
+
         Spinner mySpinner = (Spinner) findViewById(R.id.MS_spinner);
         mySpinner.setAdapter(new MyAdapter(this, R.layout.custom_spinner_view, mMedicalSpecialitySpinnerValues));
 
         Spinner doctorSpinner = (Spinner) findViewById(R.id.Doctor_spinner);
         doctorSpinner.setAdapter(new MyAdapter(this, R.layout.custom_spinner_view, mDoctorspinnerValues));
+
+        mMainLayout.setBackgroundResource(R.drawable.bg);
 
     }
 
@@ -101,6 +111,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         if (v == mDoctorLogIn){
             Intent intent = new Intent(MainActivity.this, AskForRegistration.class);
+            intent.putExtra(Constants.BundleKeys.USERTYPE,Constants.BundleKeys.DOCTOR);
+            startActivity(intent);
+        }
+        if (v == mcallBtnWrapper){
+            Intent intent = new Intent(MainActivity.this, TermsAndConditionActivity.class);
+            intent.putExtra(Constants.BundleKeys.USERTYPE,Constants.BundleKeys.PATIENT);
             startActivity(intent);
         }
     }

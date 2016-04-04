@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -38,6 +39,7 @@ public class MyProfileActivity extends AppCompatActivity {
     CircularNetworkImageView mUserImage;
     private EditText mEdtEmail,mEdtSpeciality, mEdtMobile;
     private TextView mTxtName;
+    private RelativeLayout mMainLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +59,9 @@ public class MyProfileActivity extends AppCompatActivity {
         }else {
             Utils.ShowDialog("Please check your net connection!",this);
         }
+
+        mMainLayout = (RelativeLayout) findViewById(R.id.mainContainer);
+        mMainLayout.setBackgroundResource(R.drawable.bg);
 
     }
 

@@ -12,11 +12,24 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpHeaderParser;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.midoconline.app.R;
 import com.midoconline.app.Util.Constants;
+import com.midoconline.app.Util.HttpsTrustManager;
 import com.midoconline.app.Util.SessionManager;
+import com.midoconline.app.Util.SharePreferences;
+import com.midoconline.app.beans.DataHolder;
 import com.midoconline.app.ui.activities.BaseActivity;
 import com.midoconline.app.ui.activities.CallActivity;
 import com.quickblox.chat.QBChatService;
@@ -24,8 +37,13 @@ import com.quickblox.users.model.QBUser;
 import com.quickblox.videochat.webrtc.QBRTCSession;
 import com.quickblox.videochat.webrtc.QBRTCTypes;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -38,8 +56,8 @@ public class IncomeCallFragment extends Fragment implements Serializable {
     private TextView typeIncCallView;
     private TextView callerName;
     private TextView otherIncUsers;
-    private ImageButton rejectBtn;
-    private ImageButton takeBtn;
+    private ImageView rejectBtn;
+    private ImageView takeBtn;
 
     private List<Integer> opponents;
     private List<QBUser> opponentsFromCall = new ArrayList<>();
@@ -49,17 +67,22 @@ public class IncomeCallFragment extends Fragment implements Serializable {
     private View view;
     private boolean isVideoCall;
     private Map<String, String> userInfo;
+    private SharePreferences mSharePreferences;
+    private String OpponantEmail;
+    private int receiverID;
+    private String OpponantName;
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         if (savedInstanceState == null) {
-
             view = inflater.inflate(R.layout.fragment_income_call, container, false);
-
-           // ((CallActivity) getActivity()).initActionBar();
-
+            mSharePreferences = new SharePreferences(getActivity());
+            if (getArguments() != null) {
+                receiverID =  getArguments().getInt(Constants.OPPONANT_ID);
+                OpponantName = getArguments().getString(Constants.BundleKeys.OPPONANT_NAME);
+            }
             initCallData();
             initUI(view);
             initButtonsListener();
@@ -98,15 +121,14 @@ public class IncomeCallFragment extends Fragment implements Serializable {
         typeIncCallView.setText(isVideoCall ? R.string.incoming_video_call : R.string.incoming_audio_call);
 
         callerName = (TextView) view.findViewById(R.id.callerName);
-//        callerName.setText(DataHolder.getUserNameByID(SessionManager.getCurrentSession().getCallerID()));
-//        callerName.setBackgroundResource(BaseActivity.selectBackgrounForOpponent((DataHolder.getUserIndexByID((
-//                SessionManager.getCurrentSession().getCallerID()))) + 1));
+        callerName.setText("Incoming call From "+OpponantName);
+        OpponantEmail = DataHolder.getUserEmailID(SessionManager.getCurrentSession().getCallerID());
 
         otherIncUsers = (TextView) view.findViewById(R.id.otherIncUsers);
         otherIncUsers.setText(getOtherIncUsersNames(opponents));
 
-        rejectBtn = (ImageButton) view.findViewById(R.id.rejectBtn);
-        takeBtn = (ImageButton) view.findViewById(R.id.takeBtn);
+        rejectBtn = (ImageView) view.findViewById(R.id.rejectBtn);
+        takeBtn = (ImageView) view.findViewById(R.id.takeBtn);
     }
 
     private void initButtonsListener() {
@@ -131,7 +153,6 @@ public class IncomeCallFragment extends Fragment implements Serializable {
                     ((CallActivity) getActivity())
                             .addConversationFragment(
                                     opponents, conferenceType, Constants.CALL_DIRECTION_TYPE.INCOMING);
-
                     Log.d(TAG, "Call is started");
                 }
             });
@@ -200,4 +221,5 @@ public class IncomeCallFragment extends Fragment implements Serializable {
     public void onDestroy() {
         super.onDestroy();
     }
+
 }

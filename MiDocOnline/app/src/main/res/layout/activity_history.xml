@@ -18,7 +18,7 @@
         android:layout_below="@id/toolbar_wrapper"
         android:layout_above="@+id/bottom_layout">
         <RelativeLayout
-            android:id="@+id/Rl_Top_layout"
+            android:id="@+id/mainContainer"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
            >

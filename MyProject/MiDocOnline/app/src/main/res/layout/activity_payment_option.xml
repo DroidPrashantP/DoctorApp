@@ -19,9 +19,7 @@
         <RelativeLayout
             android:id="@+id/main"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-
-            >
+            android:layout_height="match_parent">
 
             <TextView
                 android:id="@+id/text_account"
@@ -132,7 +130,7 @@
                         android:background="@null"
                         android:gravity="center"
                         android:hint="CVV"
-                        android:maxLength="3"
+                        android:maxLength="4"
                         android:textColor="@color/white"
                         android:textSize="@dimen/text_size_xlarge" />
 

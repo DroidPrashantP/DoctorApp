@@ -73,7 +73,7 @@ import java.util.Map;
 public class SignUpActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = SignUpActivity.class.getName();
     public static final String SIMPLE_DATE_FORMAT = "dd-MM-yyyy";
-    private EditText mEdtName, mEdtEmail, mEdtPassword, mEdtConfirmPassword, mEdtSpecialityLicence, mEdtCity, mEdtMobile, mEdtCountry, mEdtBirthday, mEdtSurname;
+    private EditText mEdtName, mEdtEmail, mEdtPassword, mEdtConfirmPassword, mEdtLicence, mEdtCity, mEdtMobile, mEdtCountry, mEdtBirthday, mEdtSurname;
     private Button mRequestApproval;
     private SignUpBean mSignUpBean;
     private LinearLayout mMainView;
@@ -93,8 +93,9 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     private RelativeLayout mCountryWrapper;
     private Spinner mCountrySpinner;
     private String CountryStr;
-    private String[] mMedicalSpecialitySpinnerValues = {"MEDICAL SPECIALIST", "Alergólogo", "Cardiólogo", "Cirujano General", "Dermatólogo", "Dentista", "Endocrinólogo", "Gastroenterólogo", "Geriatra", "Ginecólogo", "Hematólogo", "Hepatólogo", "Medicina Interna", "Nefrólogo", "Neumólogo", "Neurólogo", "Oftalmólogo", "Oncólogo", "Ortopedista", "Otorrinolaringólogo", "Pediatra", "Proctólogo", "Psiquiatra", "Reumatólogo", "Urólogo", "Urgenciólogo"};
-    private String[] mCountryList ={"Country","Afghanistan", "Algeria", "Australia","Bahrain"," Bangladesh", "Bhutan", "Brazil", "Canada", "China","Denmark", "Djibouti", " Egypt", " Finland","France"," Germany", "Ghana ","Greece", "India", "Indonesia","Iran","Iraq","Ireland","Israel ", "Italy", "Japan", "Jordon", "Nepal", "Netherlands", " New Zealand", "Oman", "Pakistan", "Peru", "Poland", "Qatar" ,"Russia", "Saudi Arabia", "South Africa","South Korea", "Sri Lanka", "Tanzania","Thailand"," Turkey ", "Uganda","Ukraine","United Arab Emirates","United Kingdom", "United States", "Vietnam", "Yeman", "Zambia","Zimbabwe"};
+    private String[] mMedicalSpecialitySpinnerValues = {"MEDICAL SPECIALIST","Alergólogo","Cardiólogo","Cirujano General","Dermatólogo","Dentista","Endocrinólogo","Gastroenterólogo","Geriatra","Ginecólogo","Hematólogo","Hepatólogo","Medicina Interna","Nefrólogo","Neumólogo","Neurólogo","Oftalmólogo","Oncólogo","Ortopedista","Otorrinolaringólogo","Pediatra","Proctólogo","Psiquiatra","Reumatólogo","Urólogo","Urgenciólogo"};
+   // private String[] mMedicalSpecialitySpinnerValues = {"MEDICAL SPECIALIST", "Alergologo", "Cardiologo", "Cirujano General", "Dermatologo", "Dentista", "Endocrinologo", "Gastroenterologo", "Geriatra", "Ginecólogo", "Hematologo", "Hepatologo", "Medicina Interna", "Nefrologo", "Neumologo", "Neurologo", "Oftalmologo", "Oncologo", "Ortopedista", "Otorrinolaringologo", "Pediatra", "Proctologo", "Psiquiatra", "Reumatologo", "Urologo", "Urgenciologo"};
+    private String[] mCountryList ={"Country","Afghanistan", "Algeria", "Australia","Bahrain","Bangladesh", "Bhutan", "Brazil", "Canada", "China","Denmark", "Djibouti", "Egypt", "Finland","France","Germany", "Ghana ","Greece", "India", "Indonesia","Iran","Iraq","Ireland","Israel", "Italy", "Japan", "Jordon", "Nepal", "Netherlands", "New Zealand", "Oman", "Pakistan", "Peru", "Poland", "Qatar" ,"Russia", "Saudi Arabia", "South Africa","South Korea", "Sri Lanka", "Tanzania","Thailand","Turkey", "Uganda","Ukraine","United Arab Emirates","United Kingdom", "United States", "Vietnam", "Yeman", "Zambia","Zimbabwe"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,7 +134,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         mEdtConfirmPassword = (EditText) findViewById(R.id.edt_Confirmpassword);
         mSpecialityWrapper = (RelativeLayout) findViewById(R.id.speciality_wrapper);
         mSpecialitySpinner = (Spinner) findViewById(R.id.MS_spinner);
-       // mEdtSpecialityLicence = (EditText) findViewById(R.id.edt_speciality_licence);
+        mEdtLicence = (EditText) findViewById(R.id.edt_speciality_licence);
         mEdtCity = (EditText) findViewById(R.id.edt_city);
         mEdtMobile = (EditText) findViewById(R.id.edt_mobile);
         mCountryWrapper = (RelativeLayout) findViewById(R.id.countryWrapper);
@@ -152,6 +153,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
 
         if (mUserType.equalsIgnoreCase(Constants.BundleKeys.PATIENT)) {
             mSpecialityWrapper.setVisibility(View.GONE);
+            mEdtLicence.setVisibility(View.GONE);
             mEdtCity.setVisibility(View.GONE);
             mCountryWrapper.setVisibility(View.GONE);
             mEdtSurname.setVisibility(View.VISIBLE);
@@ -164,6 +166,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
             mEdtSurname.setVisibility(View.GONE);
             mEdtBirthday.setVisibility(View.GONE);
             mGenderLayout.setVisibility(View.GONE);
+            mEdtLicence.setVisibility(View.VISIBLE);
         }
 
         maleWrapper.setOnClickListener(new View.OnClickListener() {
@@ -177,7 +180,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                     femaleWrapper.setBackground(null);
                     maleTextview.setTextColor(getResources().getColor(R.color.white));
                     femaleTextview.setTextColor(getResources().getColor(R.color.blue));
-                } catch (Exception e) {
+                } catch (NullPointerException e) {
                     e.printStackTrace();
                 }
 
@@ -419,7 +422,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     public void SendRequest() {
-        mSignUpBean = new SignUpBean(mEdtName.getText().toString(), mEdtSurname.getText().toString(), mEdtCity.getText().toString(), mEdtEmail.getText().toString(), CountryStr, mEdtMobile.getText().toString(), mEdtPassword.getText().toString(), SpecialityStr, mGender, mBirthday);
+        mSignUpBean = new SignUpBean(mEdtName.getText().toString(), mEdtSurname.getText().toString(), mEdtCity.getText().toString(), mEdtEmail.getText().toString(), CountryStr, mEdtMobile.getText().toString(), mEdtPassword.getText().toString(), SpecialityStr, mGender, mBirthday, mEdtLicence.getText().toString());
         if (NetworkManager.isConnectedToInternet(this)) {
 
             if ((isValidEmail(mEdtEmail.getText().toString())) && mEdtMobile.getText().toString().length() == 10) {
@@ -488,7 +491,8 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                     params.put("specialize", SpecialityStr);
                     params.put("city", mSignUpBean.getcity());
                     params.put("country", CountryStr);
-                    params.put("licence", mSignUpBean.getSpecialize());
+                    params.put("licence", mSignUpBean.getLincence());
+                    params.put("terms_and_condition", "" + true);
                 } else {
                     params.put("dob", mSignUpBean.getBirthday());
                     params.put("surname", mSignUpBean.getSurname());

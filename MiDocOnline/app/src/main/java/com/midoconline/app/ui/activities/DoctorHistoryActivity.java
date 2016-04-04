@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 
 import com.midoconline.app.R;
 import com.midoconline.app.Util.SimpleDividerItemDecoration;
@@ -21,17 +22,23 @@ import com.midoconline.app.ui.adapters.HistoryRecyclerView;
 
 public class DoctorHistoryActivity extends AppCompatActivity {
 
+    private RelativeLayout mMainLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
         setToolbar();
 
+        mMainLayout = (RelativeLayout) findViewById(R.id.mainContainer);
+
 //        RecyclerView recentPostRecyclerView = (RecyclerView) findViewById(R.id.history_recyclerView);
 //        recentPostRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 //        recentPostRecyclerView.addItemDecoration(new SimpleDividerItemDecoration(getResources()));
 //        HistoryRecyclerView rpAdapter = new HistoryRecyclerView(this);
 //        recentPostRecyclerView.setAdapter(rpAdapter);
+
+        mMainLayout.setBackgroundResource(R.drawable.bg);
     }
 
     @Override

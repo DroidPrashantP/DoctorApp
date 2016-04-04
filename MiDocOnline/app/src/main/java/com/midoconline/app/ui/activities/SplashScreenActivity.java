@@ -23,7 +23,6 @@ public class SplashScreenActivity extends Activity {
        new Handler().postDelayed(new Runnable() {
            @Override
            public void run() {
-
                if (mSharePreference.isLoggedIn()) {
                    Intent i = new Intent(SplashScreenActivity.this, AnswerEmeregencyCallScreen.class);
                    startActivity(i);
@@ -36,6 +35,5 @@ public class SplashScreenActivity extends Activity {
                }
            }
        },3000);
-
     }
 }

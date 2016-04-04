@@ -15,6 +15,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -22,6 +24,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.midoconline.app.R;
+import com.midoconline.app.Util.Constants;
 import com.midoconline.app.Util.NetworkManager;
 import com.midoconline.app.Util.SharePreferences;
 import com.midoconline.app.Util.StringUtils;
@@ -42,6 +45,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     private SignUpBean mSignUpBean;
     private LinearLayout mMainView;
     private SharePreferences mSharePreferences;
+    private RelativeLayout mainContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,9 +54,11 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         mSharePreferences = new SharePreferences(this);
         intiView();
         setToolbar();
+
     }
 
     private void intiView() {
+        mainContainer = (RelativeLayout) findViewById(R.id.mainContainer);
         mMainView = (LinearLayout) findViewById(R.id.MainLayoutWrapper);
         mEdtName = (EditText) findViewById(R.id.edt_name);
         mEdtEmail = (EditText) findViewById(R.id.edt_email);
@@ -72,7 +78,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         mMobileTextInput = (TextInputLayout) findViewById(R.id.til_mobile);
         mCountryTextInput = (TextInputLayout) findViewById(R.id.til_country);
 
-
+        mainContainer.setBackgroundResource(R.drawable.bg);
     }
 
     @Override
@@ -139,7 +145,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     public void ExecutePostRequest(){
 
         RequestQueue queue = Volley.newRequestQueue(this);
-        StringRequest stringrequest = new StringRequest(Request.Method.POST,"http://52.74.206.181:8010/tokens/doctor_sign_up", new Response.Listener<String>() {
+        StringRequest stringrequest = new StringRequest(Request.Method.POST, Constants.URL.SIGNUP_URL, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Utils.closeProgress();

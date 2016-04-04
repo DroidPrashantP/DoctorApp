@@ -21,11 +21,12 @@ import android.widget.Toast;
 import com.midoconline.app.R;
 import com.midoconline.app.Util.Constants;
 import com.midoconline.app.Util.SessionManager;
+import com.midoconline.app.Util.SharePreferences;
 import com.midoconline.app.Util.Utils;
+import com.midoconline.app.beans.HistoryHandler;
 import com.midoconline.app.ui.activities.CallActivity;
 import com.midoconline.app.ui.activities.MainActivity;
 import com.midoconline.app.ui.activities.OpponentsActivity;
-import com.midoconline.app.ui.activities.VideoChatActivity;
 import com.quickblox.auth.QBAuth;
 import com.quickblox.auth.model.QBSession;
 import com.quickblox.chat.QBChatService;
@@ -39,6 +40,7 @@ import com.quickblox.videochat.webrtc.QBRTCClient;
 import com.quickblox.videochat.webrtc.QBRTCConfig;
 import com.quickblox.videochat.webrtc.QBRTCException;
 import com.quickblox.videochat.webrtc.QBRTCSession;
+import com.quickblox.videochat.webrtc.QBRTCTypes;
 import com.quickblox.videochat.webrtc.callbacks.QBRTCClientConnectionCallbacks;
 import com.quickblox.videochat.webrtc.callbacks.QBRTCClientSessionCallbacks;
 
@@ -46,6 +48,7 @@ import org.jivesoftware.smack.SmackException;
 import org.webrtc.VideoCapturerAndroid;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,6 +67,7 @@ public class IncomeCallListenerService extends Service implements QBRTCClientSes
     private BroadcastReceiver connectionStateReceiver;
     private boolean needMaintainConnectivity;
     private boolean isConnectivityExists;
+    private String CallType;
 
     @Override
     public void onCreate() {
@@ -82,15 +86,15 @@ public class IncomeCallListenerService extends Service implements QBRTCClientSes
 
         chatService = QBChatService.getInstance();
 
-        if (intent != null && intent.getExtras()!= null) {
+        if (intent != null && intent.getExtras() != null) {
             pendingIntent = intent.getParcelableExtra(Constants.PARAM_PINTENT);
             parseIntentExtras(intent);
-            if (TextUtils.isEmpty(login) && TextUtils.isEmpty(password)){
+            if (TextUtils.isEmpty(login) && TextUtils.isEmpty(password)) {
                 getUserDataFromPreferences();
             }
         }
 
-        if(!QBChatService.getInstance().isLoggedIn()){
+        if (!QBChatService.getInstance().isLoggedIn()) {
             createSession(login, password);
         } else {
             startActionsOnSuccessLogin(login, password);
@@ -115,7 +119,7 @@ public class IncomeCallListenerService extends Service implements QBRTCClientSes
                 .setTicker(getResources().getString(R.string.service_launched))
                 .setWhen(System.currentTimeMillis())
                 .setContentTitle(getResources().getString(R.string.app_name))
-                .setContentText( " Login as User" );
+                .setContentText(" Login as User");
 
         Notification notification = notificationBuilder.build();
 
@@ -161,9 +165,15 @@ public class IncomeCallListenerService extends Service implements QBRTCClientSes
         login = intent.getStringExtra(Constants.USER_LOGIN);
         password = intent.getStringExtra(Constants.USER_PASSWORD);
         startServiceVariant = intent.getIntExtra(Constants.START_SERVICE_VARIANT, Constants.AUTOSTART);
+        CallType = intent.getStringExtra(Constants.BundleKeys.CALL_TYPE);
+
+        Log.e("Login", login);
+        Log.e("password", password);
+        Log.e("startServiceVariant",""+ startServiceVariant);
+        Log.e("CallType",""+ CallType);
     }
 
-    protected void getUserDataFromPreferences(){
+    protected void getUserDataFromPreferences() {
         SharedPreferences sharedPreferences = getSharedPreferences(Constants.SHARED_PREFERENCES, Context.MODE_PRIVATE);
         login = sharedPreferences.getString(Constants.USER_LOGIN, null);
         password = sharedPreferences.getString(Constants.USER_PASSWORD, null);
@@ -175,7 +185,6 @@ public class IncomeCallListenerService extends Service implements QBRTCClientSes
             QBAuth.createSession(login, password, new QBEntityCallbackImpl<QBSession>() {
                 @Override
                 public void onSuccess(QBSession session, Bundle bundle) {
-                    Utils.closeProgress();
                     Log.d(TAG, "onSuccess create session with params");
                     user.setId(session.getUserId());
 
@@ -224,15 +233,36 @@ public class IncomeCallListenerService extends Service implements QBRTCClientSes
 
     private void startActionsOnSuccessLogin(String login, String password) {
         Utils.closeProgress();
-        initQBRTCClient();
-        sendResultToActivity(true);
-        startOpponentsActivity();
-        startForeground(Constants.NOTIFICATION_FORAGROUND, createNotification());
-        saveUserDataToPreferences(login, password);
-        needMaintainConnectivity = true;
+        if (CallType.equalsIgnoreCase(Constants.BundleKeys.NORMAL_CALL)) {
+            initQBRTCClient();
+            sendResultToActivity(true);
+            startOpponentsActivity();
+            saveUserDataToPreferences(login, password);
+            needMaintainConnectivity = true;
+        } else if (CallType.equalsIgnoreCase(Constants.BundleKeys.CREATE_USER_SESSION_WITH_QB)) {
+            initQBRTCClient();
+            sendResultToActivity(true);
+            saveUserDataToPreferences(login, password);
+            needMaintainConnectivity = true;
+        }else {
+            initQBRTCClient();
+            sendResultToActivity(true);
+            QBRTCTypes.QBConferenceType qbConferenceType = QBRTCTypes.QBConferenceType.QB_CONFERENCE_TYPE_VIDEO;
+            Map<String, String> userInfo = new HashMap<>();
+            ArrayList<Integer> ids = new ArrayList<>();
+            if (Constants.BundleKeys.DOCTOR.equalsIgnoreCase(new SharePreferences(IncomeCallListenerService.this).getUserType())) {
+                ids.add(Integer.parseInt(HistoryHandler.getInstance().getCallHistoryObj.patient_id));
+            }else {
+                ids.add(Integer.parseInt(HistoryHandler.getInstance().getCallHistoryObj.doctor_id));
+            }
+            startCallerActivity(IncomeCallListenerService.this, qbConferenceType, ids,
+                    userInfo, Constants.CALL_DIRECTION_TYPE.OUTGOING);
+            saveUserDataToPreferences(login, password);
+            needMaintainConnectivity = true;
+        }
     }
 
-    private void saveUserDataToPreferences(String login, String password){
+    private void saveUserDataToPreferences(String login, String password) {
         Log.d(TAG, "saveUserDataToPreferences()");
         SharedPreferences sharedPreferences = getSharedPreferences(Constants.SHARED_PREFERENCES, MODE_PRIVATE);
         SharedPreferences.Editor ed = sharedPreferences.edit();
@@ -241,7 +271,7 @@ public class IncomeCallListenerService extends Service implements QBRTCClientSes
         ed.commit();
     }
 
-    private void startOpponentsActivity(){
+    private void startOpponentsActivity() {
         Log.d(TAG, "startOpponentsActivity()");
         if (startServiceVariant != Constants.AUTOSTART) {
             Intent intent = new Intent(IncomeCallListenerService.this, OpponentsActivity.class);
@@ -250,7 +280,25 @@ public class IncomeCallListenerService extends Service implements QBRTCClientSes
         }
     }
 
-    private void sendResultToActivity (boolean isSuccess){
+    private void startCallerActivity(Context context, QBRTCTypes.QBConferenceType qbConferenceType,
+                                     List<Integer> opponentsIds, Map<String, String> userInfo,
+                                     Constants.CALL_DIRECTION_TYPE callDirectionType) {
+        Log.d(TAG, "startOpponentsActivity()");
+        if (startServiceVariant != Constants.AUTOSTART) {
+            Intent intent = new Intent(context, CallActivity.class);
+            intent.putExtra(Constants.CALL_DIRECTION_TYPE_EXTRAS, callDirectionType);
+            intent.putExtra(Constants.CALL_TYPE_EXTRAS, qbConferenceType);
+            intent.putExtra(Constants.USER_INFO_EXTRAS, (Serializable) userInfo);
+            intent.putExtra(Constants.OPPONENTS_LIST_EXTRAS, (Serializable) opponentsIds);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+
+        }
+    }
+
+
+    private void sendResultToActivity(boolean isSuccess) {
+        Utils.closeProgress();
         Log.d(TAG, "sendResultToActivity()");
         if (startServiceVariant == Constants.LOGIN) {
             try {
@@ -273,7 +321,7 @@ public class IncomeCallListenerService extends Service implements QBRTCClientSes
         QBRTCClient.getInstance().removeConnectionCallbacksListener(this);
         SessionManager.setCurrentSession(null);
 
-        if (connectionStateReceiver != null){
+        if (connectionStateReceiver != null) {
             unregisterReceiver(connectionStateReceiver);
         }
         super.onDestroy();
@@ -306,7 +354,7 @@ public class IncomeCallListenerService extends Service implements QBRTCClientSes
                 ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
                 NetworkInfo networkInfo = cm.getActiveNetworkInfo();
 
-                if (networkInfo != null){
+                if (networkInfo != null) {
                     if (connectivityType == ConnectivityManager.TYPE_MOBILE
                             || connectivityType == ConnectivityManager.TYPE_WIFI
                             || networkInfo.getTypeName().equals("WIFI")
@@ -400,7 +448,7 @@ public class IncomeCallListenerService extends Service implements QBRTCClientSes
     }
 
     private void sendBroadcastMessages(int callbackAction, Integer usedID,
-                                       Map<String, String> userInfo, QBRTCException exception){
+                                       Map<String, String> userInfo, QBRTCException exception) {
         Intent intent = new Intent();
         intent.setAction(Constants.CALL_RESULT);
         intent.putExtra(Constants.CALL_ACTION_VALUE, callbackAction);
@@ -415,15 +463,16 @@ public class IncomeCallListenerService extends Service implements QBRTCClientSes
 
     @Override
     public void onReceiveNewSession(QBRTCSession qbrtcSession) {
-        if (SessionManager.getCurrentSession() == null){
+        if (SessionManager.getCurrentSession() == null) {
             SessionManager.setCurrentSession(qbrtcSession);
+            Log.e("Incoming", "" + qbrtcSession.getUserInfo());
             CallActivity.start(this,
                     qbrtcSession.getConferenceType(),
                     qbrtcSession.getOpponents(),
                     qbrtcSession.getUserInfo(),
                     Constants.CALL_DIRECTION_TYPE.INCOMING);
-        } else if (SessionManager.getCurrentSession() != null && !qbrtcSession.equals(SessionManager.getCurrentSession())){
-                qbrtcSession.rejectCall(new HashMap<String, String>());
+        } else if (SessionManager.getCurrentSession() != null && !qbrtcSession.equals(SessionManager.getCurrentSession())) {
+            qbrtcSession.rejectCall(qbrtcSession.getUserInfo());
         }
     }
 

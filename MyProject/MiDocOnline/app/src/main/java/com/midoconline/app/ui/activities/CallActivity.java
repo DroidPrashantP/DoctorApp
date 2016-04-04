@@ -1,6 +1,7 @@
 package com.midoconline.app.ui.activities;
 
 import android.annotation.TargetApi;
+import android.app.Dialog;
 import android.app.Fragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -13,36 +14,58 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.util.Log;
+import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.Chronometer;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpHeaderParser;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.midoconline.app.R;
 import com.midoconline.app.Util.Constants;
+import com.midoconline.app.Util.HttpsTrustManager;
 import com.midoconline.app.Util.SessionManager;
+import com.midoconline.app.Util.SharePreferences;
+import com.midoconline.app.Util.StringUtils;
+import com.midoconline.app.Util.Utils;
 import com.midoconline.app.ui.fragments.AudioConversationFragment;
 import com.midoconline.app.ui.fragments.BaseConversationFragment;
 import com.midoconline.app.ui.fragments.IncomeCallFragment;
 import com.midoconline.app.ui.fragments.VideoConversationFragment;
 import com.quickblox.chat.QBChatService;
 import com.quickblox.chat.model.QBChatMessage;
+import com.quickblox.users.model.QBUser;
 import com.quickblox.videochat.webrtc.QBRTCClient;
 import com.quickblox.videochat.webrtc.QBRTCConfig;
+//import com.quickblox.videochat.webrtc.QBRTCException;
 import com.quickblox.videochat.webrtc.QBRTCException;
 import com.quickblox.videochat.webrtc.QBRTCSession;
 import com.quickblox.videochat.webrtc.QBRTCTypes;
 
 import org.jivesoftware.smack.SmackException;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
- *
  * Created by tereha on 16.02.15.
- *
  */
 public class CallActivity extends BaseActivity {
 
@@ -61,10 +84,17 @@ public class CallActivity extends BaseActivity {
     private List<Integer> opponentsList;
     private MediaPlayer ringtone;
     private BroadcastReceiver callBroadcastReceiver;
+    private SharePreferences mSharePreferences;
+
+    private boolean UpdateHistoryTwo = false;
+    private boolean UpdateHistoryThree = false;
+    private boolean isChargeApplied = false;
+    protected QBUser loginedUser;
+    private HashMap<String, String> userData;
 
     public static void start(Context context, QBRTCTypes.QBConferenceType qbConferenceType,
                              List<Integer> opponentsIds, Map<String, String> userInfo,
-                             Constants.CALL_DIRECTION_TYPE callDirectionType){
+                             Constants.CALL_DIRECTION_TYPE callDirectionType) {
         Intent intent = new Intent(context, CallActivity.class);
         intent.putExtra(Constants.CALL_DIRECTION_TYPE_EXTRAS, callDirectionType);
         intent.putExtra(Constants.CALL_TYPE_EXTRAS, qbConferenceType);
@@ -80,18 +110,25 @@ public class CallActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.call_activity);
+        mSharePreferences = new SharePreferences(this);
         registerCallbackListener();
 
         if (getIntent().getExtras() != null) {
             parseIntentExtras(getIntent().getExtras());
         }
-        if (call_direction_type == Constants.CALL_DIRECTION_TYPE.INCOMING){
+        if (call_direction_type == Constants.CALL_DIRECTION_TYPE.INCOMING) {
             isInCommingCall = true;
-            addIncomeCallFragment(SessionManager.getCurrentSession());
+            addIncomeCallFragment(opponentsList, SessionManager.getCurrentSession());
 
-        } else if (call_direction_type == Constants.CALL_DIRECTION_TYPE.OUTGOING){
+        } else if (call_direction_type == Constants.CALL_DIRECTION_TYPE.OUTGOING) {
             isInCommingCall = false;
             addConversationFragment(opponentsList, call_type, call_direction_type);
+        }
+
+        if (QBChatService.isInitialized()) {
+            if (QBChatService.getInstance().isLoggedIn()) {
+                loginedUser = QBChatService.getInstance().getUser();
+            }
         }
     }
 
@@ -100,6 +137,8 @@ public class CallActivity extends BaseActivity {
                 Constants.CALL_DIRECTION_TYPE_EXTRAS);
         call_type = (QBRTCTypes.QBConferenceType) extras.getSerializable(Constants.CALL_TYPE_EXTRAS);
         opponentsList = (List<Integer>) extras.getSerializable(Constants.OPPONENTS_LIST_EXTRAS);
+        Log.e("UserData", ""+(HashMap<String, String>) extras.getSerializable(Constants.USER_INFO_EXTRAS));
+        userData = (HashMap<String, String>) extras.getSerializable(Constants.USER_INFO_EXTRAS);
     }
 
     @Override
@@ -166,7 +205,7 @@ public class CallActivity extends BaseActivity {
         if (SessionManager.getCurrentSession() != null) {
             SessionManager.getCurrentSession().hangUp(new HashMap<String, String>());
         }
-        finish();
+
     }
 
     private void startIncomeCallTimer() {
@@ -209,7 +248,9 @@ public class CallActivity extends BaseActivity {
 
     // ---------------Chat callback methods implementation  ----------------------//
 
-    public void onReceiveNewSession(){
+    public void onReceiveNewSession() {
+
+        Log.e("ReceiveSession", "Receive Call");
     }
 
     public void onUserNotAnswer(Integer userID) {
@@ -232,7 +273,7 @@ public class CallActivity extends BaseActivity {
         });
     }
 
-    public void onCallRejectByUser (Integer userID, Map<String, String> userInfo) {
+    public void onCallRejectByUser(Integer userID, Map<String, String> userInfo) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -275,8 +316,6 @@ public class CallActivity extends BaseActivity {
                     fragment.actionButtonsEnabled(true);
                 }
 
-                // test code
-                //
                 try {
                     // create a message
                     QBChatMessage chatMessage = new QBChatMessage();
@@ -287,9 +326,10 @@ public class CallActivity extends BaseActivity {
                     chatMessage.setRecipientId(QBChatService.getInstance().getUser().getId());
 
                     QBChatService.getInstance().getSystemMessagesManager().sendSystemMessage(chatMessage);
+                    updateHistoryAfterVideoCall();
                 } catch (SmackException.NotConnectedException e) {
                     e.printStackTrace();
-                } catch (IllegalStateException ee){
+                } catch (IllegalStateException ee) {
                     ee.printStackTrace();
                 }
                 //
@@ -298,6 +338,21 @@ public class CallActivity extends BaseActivity {
         });
     }
 
+    private void startTimer() {
+        VideoConversationFragment fragment = (VideoConversationFragment) getFragmentManager().findFragmentByTag(CONVERSATION_CALL_FRAGMENT);
+        if (fragment != null) {
+            fragment.startTimer();
+        }
+
+    }
+
+    private void stopTimer() {
+        VideoConversationFragment fragment = (VideoConversationFragment) getFragmentManager().findFragmentByTag(CONVERSATION_CALL_FRAGMENT);
+        if (fragment != null) {
+            fragment.stopTimer();
+        }
+
+    }
     public void onDisconnectedTimeoutFromUser(Integer userID) {
         runOnUiThread(new Runnable() {
             @Override
@@ -324,18 +379,22 @@ public class CallActivity extends BaseActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                    if (isInCommingCall) {
-                        stopIncomeCallTimer();
-                        Log.d(TAG, "isInCommingCall - " + isInCommingCall);
-                    }
+                if (isInCommingCall) {
+                    stopIncomeCallTimer();
+                    Log.d(TAG, "isInCommingCall - " + isInCommingCall);
+                }
 
-                    SessionManager.setCurrentSession(null);
+                SessionManager.setCurrentSession(null);
 
-                    Log.d(TAG, "Stop session");
+                Log.d(TAG, "Stop session");
 
-                    stopTimer();
-                    closeByWifiStateAllow = true;
-                    finish();
+                stopTimer();
+                closeByWifiStateAllow = true;
+                finish();
+                EndVideoCall();
+                if (mSharePreferences.getUserType().equalsIgnoreCase(Constants.BundleKeys.PATIENT)) {
+                    ApplyCallCharge();
+                }
             }
         });
     }
@@ -361,21 +420,29 @@ public class CallActivity extends BaseActivity {
     }
 
     public void onReceiveHangUpFromUser(final Integer userID) {
-            // TODO update view of this user
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    showToast(R.string.hungUp);
-                }
-            });
-            finish();
+        // TODO update view of this user
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                showToast(R.string.hungUp);
+            }
+        });
+        finish();
     }
 
-    private void addIncomeCallFragment(QBRTCSession session) {
-        if(session != null) {
+    private void addIncomeCallFragment(List<Integer> opponentsList, QBRTCSession session) {
+        if (session != null) {
             initIncommingCallTask();
             startIncomeCallTimer();
             Fragment fragment = new IncomeCallFragment();
+            Bundle bundle = new Bundle();
+            bundle.putInt(Constants.OPPONANT_ID, opponentsList.get(0));
+            try {
+                bundle.putString(Constants.BundleKeys.OPPONANT_NAME,""+userData.get(Constants.BundleKeys.OPPONANT_NAME));
+            }catch (Exception e){
+
+            }
+            fragment.setArguments(bundle);
             getFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment, INCOME_CALL_FRAGMENT).commit();
         } else {
             Log.d(TAG, "SKIP addIncomeCallFragment method");
@@ -383,15 +450,17 @@ public class CallActivity extends BaseActivity {
         }
     }
 
-    public void addConversationFragment (List<Integer> opponents,
-                                          QBRTCTypes.QBConferenceType qbConferenceType,
-                                          Constants.CALL_DIRECTION_TYPE callDirectionType){
+    public void addConversationFragment(List<Integer> opponents,
+                                        QBRTCTypes.QBConferenceType qbConferenceType,
+                                        Constants.CALL_DIRECTION_TYPE callDirectionType) {
 
-        if (SessionManager.getCurrentSession() == null && callDirectionType == Constants.CALL_DIRECTION_TYPE.OUTGOING){
+        if (SessionManager.getCurrentSession() == null && callDirectionType == Constants.CALL_DIRECTION_TYPE.OUTGOING) {
             startOutBeep();
             try {
                 QBRTCSession newSessionWithOpponents = QBRTCClient.getInstance().createNewSessionWithOpponents(opponents, qbConferenceType);
                 SessionManager.setCurrentSession(newSessionWithOpponents);
+                SessionManager.setUserInfo(userData);
+
                 Log.d(TAG, "addConversationFragmentStartCall. Set session " + newSessionWithOpponents);
 
             } catch (IllegalStateException e) {
@@ -404,13 +473,15 @@ public class CallActivity extends BaseActivity {
 
         Bundle bundle = new Bundle();
         bundle.putInt(Constants.CALL_DIRECTION_TYPE_EXTRAS, callDirectionType.ordinal());
+        bundle.putInt(Constants.OPPONANT_ID, opponents.get(0));
+        bundle.putString(Constants.BundleKeys.OPPONANT_NAME, userData.get(Constants.BundleKeys.OPPONANT_NAME));
         fragment.setArguments(bundle);
 
         getFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment, CONVERSATION_CALL_FRAGMENT).commit();
     }
 
     private void startOutBeep() {
-        ringtone = MediaPlayer.create(this, R.raw.beep);
+        ringtone = MediaPlayer.create(this, R.raw.pushringtone);
         ringtone.setLooping(true);
         ringtone.start();
     }
@@ -459,14 +530,15 @@ public class CallActivity extends BaseActivity {
 
     @Override
     public void onBackPressed() {
+        super.onBackPressed();
     }
 
-    private void registerCallbackListener(){
+    private void registerCallbackListener() {
         callBroadcastReceiver = new BroadcastReceiver() {
 
             public void onReceive(Context context, Intent intent) {
 
-                if (intent.getAction().equals(Constants.CALL_RESULT)){
+                if (intent.getAction().equals(Constants.CALL_RESULT)) {
 
                     int callTask = intent.getIntExtra(Constants.CALL_ACTION_VALUE, 0);
                     final Integer userID = intent.getIntExtra(Constants.USER_ID, 0);
@@ -524,6 +596,205 @@ public class CallActivity extends BaseActivity {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(Constants.CALL_RESULT);
         registerReceiver(callBroadcastReceiver, intentFilter);
+    }
+
+    private void updateHistoryAfterVideoCall() {
+        if (!UpdateHistoryTwo) {
+            RequestQueue queue = Volley.newRequestQueue(this);
+            HttpsTrustManager.allowAllSSL();
+            String url = Constants.URL.UPDATE_HISTORY_BEFORE_VIDEO_CALL + "/" + mSharePreferences.getHistoryID() + "/update_call_history";
+            StringRequest stringrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    Log.d(TAG + "Update Video After Call", response);
+                    UpdateHistoryTwo = true;
+                }
+
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    NetworkResponse response = error.networkResponse;
+                    if (error instanceof ServerError && response != null) {
+                        try {
+                            String res = new String(response.data,
+                                    HttpHeaderParser.parseCharset(response.headers, "utf-8"));
+                            JSONObject obj = new JSONObject(res);
+                            Log.e("Error", obj.toString());
+                        } catch (UnsupportedEncodingException e1) {
+                            e1.printStackTrace();
+                        } catch (JSONException e2) {
+                            e2.printStackTrace();
+                        }
+                    }
+                }
+            }) {
+                @Override
+                protected Map<String, String> getParams() {
+                    Map<String, String> params = new HashMap<String, String>();
+                    params.put("authentication_token", mSharePreferences.getAuthenticationToken());
+                    params.put("key", mSharePreferences.getKey());
+                    params.put("call_status", "received");
+                    return params;
+                }
+
+                @Override
+                public Map<String, String> getHeaders() {
+                    Map<String, String> params = new HashMap<String, String>();
+                    return params;
+                }
+            };
+            queue.add(stringrequest);
+        }
+    }
+
+    private void EndVideoCall() {
+        if (!UpdateHistoryThree) {
+            RequestQueue queue = Volley.newRequestQueue(this);
+            HttpsTrustManager.allowAllSSL();
+            String url = Constants.URL.UPDATE_HISTORY_BEFORE_VIDEO_CALL + "/" + mSharePreferences.getHistoryID() + "/update_history";
+            StringRequest stringrequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    Log.d(TAG + "Update End Call", response);
+                    UpdateHistoryThree = true;
+                }
+
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    finish();
+                    NetworkResponse response = error.networkResponse;
+                    if (error instanceof ServerError && response != null) {
+                        try {
+                            String res = new String(response.data,
+                                    HttpHeaderParser.parseCharset(response.headers, "utf-8"));
+                            JSONObject obj = new JSONObject(res);
+//                            mSharePreferences.setStripKey(null);
+//                            mSharePreferences.setCardDetailsAvailable(false);
+                            //   {"message":"Another account is already using this email address","status":"Failure"}
+                            Log.e("Error", obj.toString());
+                        } catch (UnsupportedEncodingException e1) {
+                            e1.printStackTrace();
+                        } catch (JSONException e2) {
+                            e2.printStackTrace();
+                        }
+                    }
+                }
+            }) {
+                @Override
+                protected Map<String, String> getParams() {
+                    Map<String, String> params = new HashMap<String, String>();
+                    params.put("authentication_token", mSharePreferences.getAuthenticationToken());
+                    params.put("key", mSharePreferences.getKey());
+                    params.put("duration", "" + 5);
+                    params.put("call_status", "completed");
+                    params.put("receiver_email", mSharePreferences.getQBEmail());
+
+                    return params;
+                }
+
+                @Override
+                public Map<String, String> getHeaders() {
+                    Map<String, String> params = new HashMap<String, String>();
+                    return params;
+                }
+            };
+            queue.add(stringrequest);
+        }
+    }
+
+    public void ApplyCallCharge() {
+        if (!isChargeApplied) {
+            RequestQueue queue = Volley.newRequestQueue(this);
+            Log.e("Url", Constants.URL.CHARGE_PAYMENT_URL);
+            StringRequest stringrequest = new StringRequest(Request.Method.POST, Constants.URL.CHARGE_PAYMENT_URL, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    Log.d("Charge Apply", response);
+                    isChargeApplied = true;
+                    ParseChargePaymentReponse(response);
+                }
+
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.d(TAG, "" + error.toString());
+                    mSharePreferences.setStripKey(null);
+                    mSharePreferences.setCardDetailsAvailable(false);
+                    NetworkResponse response = error.networkResponse;
+                    if (response != null) {
+                        try {
+                            String res = new String(response.data,
+                                    HttpHeaderParser.parseCharset(response.headers, "utf-8"));
+                            JSONObject obj = new JSONObject(res);
+                            Log.d(TAG, "" + obj.toString());
+                            if (obj.has("message")) {
+                                String message = obj.getString("message");
+                            }
+                        } catch (UnsupportedEncodingException e1) {
+                            e1.printStackTrace();
+                        } catch (JSONException e2) {
+                            e2.printStackTrace();
+                        }
+                    }
+                }
+            }) {
+                @Override
+                protected Map<String, String> getParams() {
+                    Map<String, String> params = new HashMap<String, String>();
+                    params.put("key", "" + mSharePreferences.getKey());
+                    params.put("authentication_token", "" + mSharePreferences.getAuthenticationToken());
+                    params.put("email", "" + mSharePreferences.getQBEmail());
+                    params.put("stripeToken", "" + mSharePreferences.getStripeKey());
+                    params.put("amount", "4000");
+
+                    return params;
+                }
+            };
+            queue.add(stringrequest);
+        }
+
+    }
+
+    private void ParseChargePaymentReponse(String response) {
+        if (StringUtils.isNotEmpty(response)){
+            try {
+                JSONObject mainObject = new JSONObject(response);
+                String status = mainObject.getString("status");
+                String msg = mainObject.getString("message");
+                if (status.equalsIgnoreCase("success")){
+                    mSharePreferences.setStripKey(null);
+                    mSharePreferences.setCardDetailsAvailable(false);
+                    ShowDialog(msg);
+                }else {
+                   Toast.makeText(CallActivity.this, msg, Toast.LENGTH_SHORT).show();
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+    public void ShowDialog(String msg) {
+
+        final Dialog mDialog = new Dialog(this);
+        mDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        mDialog.setContentView(R.layout.layout_custom_logout_dialog);
+        mDialog.setCancelable(true);
+        mDialog.show();
+        TextView message = (TextView) mDialog.findViewById(R.id.text);
+        message.setText(msg);
+        LinearLayout mainWrapper = (LinearLayout) mDialog.findViewById(R.id.mainWrapper);
+        mDialog.findViewById(R.id.cancel_logout_btn).setVisibility(View.GONE);
+        Button okBtn = (Button) mDialog.findViewById(R.id.logout_yes_btn);
+        okBtn.setText("Ok");
+        okBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            }
+        });
+
     }
 }
 

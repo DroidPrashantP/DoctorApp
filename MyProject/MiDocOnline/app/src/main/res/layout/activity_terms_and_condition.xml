@@ -10,11 +10,14 @@
         layout="@layout/layout_header_file"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/toolbar_wrapper">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="@dimen/margin_large"
-        android:layout_below="@+id/toolbar_wrapper"
         android:orientation="vertical">
 
         <TextView
@@ -38,32 +41,33 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur sollicitudin velit eget enim pulvinar, vel varius mi imperdiet. Ut bibendum eros mattis, dignissim velit in, interdum ligula. Vivamus aliquet id sem et auctor. In malesuada urna laoreet erat rutrum posuere et eu sapien. Phasellus consequat hendrerit nulla, et tempus urna faucibus non. Ut quis urna eget nisl ultrices maximus hendrerit porta ligula. Donec bibendum libero at felis convallis volutpat sed nec nulla. Aliquam et tempus nisi. Sed id orci eu eros sollicitudin fringilla. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae;Duis non iaculis nulla. In at sem in tellus sodales elementum sit amet id nibh. Aliquam sit amet tempor quam. Cras in lorem ut mi ullamcorper lobortis nec quis purus. Vestibulum nec dapibus nibh. In non tortor nec quam aliquam condimentum. Fusce non ex vitae justo fermentum semper."
+            android:text="@string/terms_and_cont_text"
             android:textColor="@color/black"
             android:padding="@dimen/padding_normal"
             android:textSize="@dimen/text_size_medium"/>
 
-        <RelativeLayout android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="@dimen/margin_large">
-            <ImageView
-                android:id="@+id/backward_arrow"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/forward_arrow"
-                android:padding="@dimen/margin_normal"
-                android:tint="@color/blue"/>
-            <ImageView
-                android:id="@+id/forward_arrow"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/backward_arrow"
-                android:padding="@dimen/margin_normal"
-                android:layout_alignParentRight="true"
-                android:tint="@color/blue"/>
-        </RelativeLayout>
+        <!--<RelativeLayout android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:orientation="horizontal"-->
+            <!--android:layout_marginTop="@dimen/margin_large">-->
+            <!--<ImageView-->
+                <!--android:id="@+id/backward_arrow"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:src="@drawable/forward_arrow"-->
+                <!--android:padding="@dimen/margin_normal"-->
+                <!--android:tint="@color/blue"/>-->
+            <!--<ImageView-->
+                <!--android:id="@+id/forward_arrow"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:src="@drawable/backward_arrow"-->
+                <!--android:padding="@dimen/margin_normal"-->
+                <!--android:layout_alignParentRight="true"-->
+                <!--android:tint="@color/blue"/>-->
+        <!--</RelativeLayout>-->
 
     </LinearLayout>
+    </ScrollView>
 
 </RelativeLayout>

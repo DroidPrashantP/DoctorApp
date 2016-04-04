@@ -3,7 +3,7 @@ package com.midoconline.app.Util;
 /**
  * Created by Prashant on 6/10/15.
  */
-public class Constants {
+public interface Constants {
     interface Preferences {
         String PREFERENCES = "midoconline_pref";
         String LOGGED_IN = "logged_in";
@@ -21,5 +21,19 @@ public class Constants {
         String COUNTRY = "country";
         String MOBILE = "mobile";
         String IMAGEPATH = "user_image_url";
+    }
+
+    interface BundleKeys {
+        String USERTYPE    = "userType";
+        String PATIENT = "Patient";
+        String DOCTOR = "Doctor";
+    }
+
+    interface URL {
+        String BASE_URL    = "http://52.74.206.181:8010/";
+        String SIGNUP_URL    = BASE_URL +"tokens/doctor_sign_up";
+        String SIGNIN_URL    = BASE_URL +"tokens.json";
+        String PAYMENT_OPTION_URL    = BASE_URL +"save_card_details";
+
     }
 }

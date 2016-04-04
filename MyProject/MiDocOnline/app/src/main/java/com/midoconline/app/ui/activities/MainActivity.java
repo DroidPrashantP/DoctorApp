@@ -1,15 +1,19 @@
 package com.midoconline.app.ui.activities;
 
 import android.app.Dialog;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -41,21 +45,30 @@ import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.facebook.login.LoginManager;
-import com.midoconline.app.MiDocOnlineApplication;
 import com.midoconline.app.R;
 import com.midoconline.app.Util.Constants;
 import com.midoconline.app.Util.HttpsTrustManager;
-import com.midoconline.app.Util.NetworkManager;
 import com.midoconline.app.Util.SharePreferences;
 import com.midoconline.app.Util.StringUtils;
 import com.midoconline.app.Util.Utils;
 import com.midoconline.app.api.QBApi;
 import com.midoconline.app.beans.Doctor;
+import com.midoconline.app.services.IncomeCallListenerService;
+import com.midoconline.app.ui.activities.util.ErrorDialogFragment;
 import com.midoconline.app.ui.adapters.DoctorListAdapter;
 import com.midoconline.app.ui.fragments.NavigationDrawerFragment;
 import com.quickblox.auth.QBAuth;
 import com.quickblox.auth.model.QBSession;
+import com.quickblox.chat.QBChatService;
+import com.quickblox.core.QBEntityCallback;
 import com.quickblox.core.QBEntityCallbackImpl;
+import com.quickblox.core.QBSettings;
+import com.quickblox.core.exception.QBResponseException;
+import com.quickblox.users.model.QBUser;
+import com.stripe.android.Stripe;
+import com.stripe.android.TokenCallback;
+import com.stripe.android.model.Card;
+import com.stripe.android.model.Token;
 import com.twitter.sdk.android.Twitter;
 
 import org.json.JSONArray;
@@ -63,18 +76,21 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MainActivity extends BaseActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final int NAV_ITEMS_MAIN = R.id.group_main;
     private static final String TAG = MainActivity.class.getName();
     private DrawerLayout mDrawerLayout;
     private Button mDoctorLogIn, mPatientLogIn;
-    String[] mMedicalSpecialitySpinnerValues = {"MEDICAL SPECIALIST", "Alergólogo", "Cardiólogo", "Cirujano General", "Dermatólogo", "Dentista", "Endocrinólogo", "Gastroenterólogo", "Geriatra", "Ginecólogo", "Hematólogo", "Hepatólogo", "Medicina Interna", "Nefrólogo", "Neumólogo", "Neurólogo", "Oftalmólogo", "Oncólogo", "Ortopedista", "Otorrinolaringólogo", "Pediatra", "Proctólogo", "Psiquiatra", "Reumatólogo", "Urólogo", "Urgenciólogo"};
+  //  String[] mMedicalSpecialitySpinnerValues = {"MEDICAL SPECIALIST", "Alergologo", "Cardiologo", "Cirujano General", "Dermatologo", "Dentista", "Endocrinologo", "Gastroenterologo", "Geriatra", "Ginecólogo", "Hematologo", "Hepatologo", "Medicina Interna", "Nefrologo", "Neumologo", "Neurologo", "Oftalmologo", "Oncologo", "Ortopedista", "Otorrinolaringologo", "Pediatra", "Proctologo", "Psiquiatra", "Reumatologo", "Urologo", "Urgenciologo"};
+    String[] mMedicalSpecialitySpinnerValues = {"MEDICAL SPECIALIST","Alergólogo","Cardiólogo","Cirujano General","Dermatólogo","Dentista","Endocrinólogo","Gastroenterólogo","Geriatra","Ginecólogo","Hematólogo","Hepatólogo","Medicina Interna","Nefrólogo","Neumólogo","Neurólogo","Oftalmólogo","Oncólogo","Ortopedista","Otorrinolaringólogo","Pediatra","Proctólogo","Psiquiatra","Reumatólogo","Urólogo","Urgenciólogo"};
+
     ArrayList<Doctor> mDoctorspinnerValues = new ArrayList<Doctor>();
     Spinner mMenuSpinner;
     private String[] mMenuspinnerValues = {"Account", "History"};
@@ -89,34 +105,32 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private static MenuItem mPreviousMenuItem;
     private Toolbar mToolbar;
     private NavigationDrawerFragment navigationDrawerFragment;
-    public  String mSpecialization;
-    public  String mSelectedDoctor;
+    public String mSpecialization = "";
+    public String mSelectedDoctor;
     private Spinner doctorSpinner;
+    private String stripTokenID;
+    private QBChatService chatService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mView = getLayoutInflater().inflate(R.layout.activity_main, null);
         setContentView(mView);
+        QBSettings.getInstance().fastConfigInit(Constants.APP_ID, Constants.AUTH_KEY, Constants.AUTH_SECRET);
         mSharePreferences = new SharePreferences(this);
         mMainLayout = (RelativeLayout) findViewById(R.id.content);
         initializeNavigationDrawer();
         IniTiView();
 
-        if(mSharePreferences.isLoggedIn()){
+        if (mSharePreferences.isLoggedIn()) {
             getDoctorList();
-            // create quickbox session and get session id
-            QBApi.CreateQBSession(this, mSharePreferences);
+            UserLoginWithQB(Constants.BundleKeys.CREATE_USER_SESSION_WITH_QB);
             mVisitAndHistoryWrapper.setVisibility(View.VISIBLE);
-        }else {
+        } else {
             mVisitAndHistoryWrapper.setVisibility(View.GONE);
         }
     }
 
-    @Override
-    void processCurrentConnectionState(boolean isConnected) {
-
-    }
 
     private void IniTiView() {
         mDoctorLogIn = (Button) findViewById(R.id.btn_doctor_login);
@@ -154,11 +168,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (position != 0 ){
+                if (position != 0) {
                     mSpecialization = mMedicalSpecialitySpinnerValues[position];
                     mSharePreferences.setMedicalSpecialist(mMedicalSpecialitySpinnerValues[position]);
                     getDoctorList();
-                }else {
+                } else {
                     mSharePreferences.setMedicalSpecialist("");
                 }
             }
@@ -172,12 +186,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         doctorSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (position != 0 ){
-                    mSelectedDoctor = mDoctorspinnerValues.get(position).full_name;
+               // if (position = 0) {
+                    mSelectedDoctor = mDoctorspinnerValues.get(position).qb_login;
                     mSharePreferences.setSelectedDoctor(mSelectedDoctor);
-                }else {
-                    mSharePreferences.setSelectedDoctor("");
-                }
+//                } else {
+//                    mSharePreferences.setSelectedDoctor("");
+//                }
             }
 
             @Override
@@ -194,6 +208,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         setToolbar();
         HidesLayout();
         invalidateOptionsMenu();
+        Utils.closeProgress();
     }
 
     /**
@@ -206,42 +221,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             getWindow().setStatusBarColor(getResources().getColor(R.color.primary_dark));
         }
-//        navigationView = (NavigationView) findViewById(R.id.nav_view);
-//        if (navigationView != null) {
-//            Log.d(TAG, "Logged In :" + mSharePreferences.isLoggedIn());
-//            setupDrawerContent(navigationView);
-//        }
     }
 
-    private void setupDrawerContent(final NavigationView navigationView) {
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(MenuItem menuItem) {
-                menuItem.setCheckable(true);
-                menuItem.setChecked(true);
-                if (mPreviousMenuItem != null && mPreviousMenuItem != menuItem) {
-                    mPreviousMenuItem.setChecked(false);
-                }
-                mPreviousMenuItem = menuItem;
-                Log.d(TAG, "Group Id" + menuItem.getGroupId());
-                switch (menuItem.getItemId()) {
-                    case R.id.item_account:
-                        Intent i = new Intent(MainActivity.this, MyProfileActivity.class);
-                        startActivity(i);
-                        mDrawerLayout.closeDrawers();
-                        break;
-                    case R.id.item_history:
-                        Intent intent = new Intent(MainActivity.this, DoctorHistoryActivity.class);
-                        startActivity(intent);
-                        mDrawerLayout.closeDrawers();
-                        break;
-
-
-                }
-                return true;
-            }
-        });
-    }
 
     public void setToolbar() {
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -265,9 +246,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
@@ -300,15 +278,21 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 if (mSharePreferences.isLoggedIn()) {
                     if (mSharePreferences.getUserType().equalsIgnoreCase(Constants.BundleKeys.PATIENT)) {
                         if (StringUtils.isNotEmpty(mSpecialization)) {
-                            ShowDialog();
+                            mSharePreferences.setEmergencyTag(Constants.NORMAL_CALL);
+                            if (StringUtils.isNotEmpty(mSharePreferences.getStripeKey())) {
+                                goForCall(Constants.BundleKeys.NORMAL_CALL);
+                            } else {
+                                ShowDialog();
+                            }
                         } else {
                             Utils.ShowSnackBar(mView, "Please select Specialization");
                         }
-                    }else {
-                        ShowDialog();
+                    } else {
+                        mSharePreferences.setEmergencyTag(Constants.NORMAL_CALL);
+                        goForCall(Constants.BundleKeys.NORMAL_CALL);
                     }
                 } else {
-                    Intent intent = new Intent(MainActivity.this, PaymentSignupActivity.class);
+                    Intent intent = new Intent(MainActivity.this, SignInActivity.class);
                     startActivity(intent);
                 }
             } else {
@@ -319,16 +303,24 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         if (v == mKidsEmergency) {
             mSharePreferences.setEmergencyTag(Constants.KID_EMERGENCY);
             if (mSharePreferences.isLoggedIn()) {
-                ShowDialog();
+                if (StringUtils.isNotEmpty(mSharePreferences.getStripeKey())) {
+                    goForCall(Constants.BundleKeys.NORMAL_CALL);
+                } else {
+                    ShowDialog();
+                }
             } else {
-                ShowDialog();
+                Intent intent = new Intent(MainActivity.this, PaymentSignupActivity.class);
+                startActivity(intent);
             }
         }
         if (v == mAdultEmergency) {
             mSharePreferences.setEmergencyTag(Constants.ADULT_EMERGENCY);
             if (mSharePreferences.isLoggedIn()) {
-                Intent intent = new Intent(MainActivity.this, PaymentOptionActivity.class);
-                startActivity(intent);
+                if (StringUtils.isNotEmpty(mSharePreferences.getStripeKey())) {
+                   goForCall(Constants.BundleKeys.NORMAL_CALL);
+                } else {
+                    ShowDialog();
+                }
             } else {
                 Intent intent = new Intent(MainActivity.this, PaymentSignupActivity.class);
                 startActivity(intent);
@@ -340,6 +332,19 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             startActivity(intent);
             // }
         }
+    }
+
+    public void goForCall(String tag){
+        Utils.showProgress(MainActivity.this);
+        String login = mSharePreferences.getQBEmail();
+        String password = "password";
+        startIncomeCallListenerService(login, password, Constants.LOGIN, tag);
+    }
+
+    public void UserLoginWithQB(String tag){
+        String login = mSharePreferences.getQBEmail();
+        String password = "password";
+        startIncomeCallListenerService(login, password, Constants.LOGIN, tag);
     }
 
     public class MyAdapter extends ArrayAdapter<String> {
@@ -407,6 +412,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     @Override
     protected void onPause() {
         super.onPause();
+        Utils.closeProgress();
     }
 
 
@@ -455,12 +461,19 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         }
     }
 
-
     private void getDoctorList() {
         Utils.showProgress(this);
         RequestQueue queue = Volley.newRequestQueue(this);
         HttpsTrustManager.allowAllSSL();
-        StringRequest stringrequest = new StringRequest(Request.Method.GET, Constants.URL.GET_DOCTOR_LIST, new Response.Listener<String>() {
+        String url = "";
+        try {
+            url = Constants.URL.GET_DOCTOR_LIST+"?authentication_token="+mSharePreferences.getAuthenticationToken()+"&key="+mSharePreferences.getKey()+"&specialize="+URLEncoder.encode(mSpecialization, "utf-8")+"&page=1&per_page=1000";
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        Log.d("UEL", url);
+        StringRequest stringrequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Utils.closeProgress();
@@ -489,18 +502,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             }
         }) {
             @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("authentication_token", mSharePreferences.getAuthenticationToken());
-                params.put("key", mSharePreferences.getKey());
-                params.put("specialize", mSpecialization);
-                params.put("page", ""+1);
-                params.put("per_page",""+ 30);
-
-                return params;
-            }
-
-            @Override
             public Map<String, String> getHeaders() {
                 Map<String, String> params = new HashMap<String, String>();
                 return params;
@@ -511,15 +512,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     private void getDoctorListResponse(String response) {
-        if (StringUtils.isNotEmpty(response)){
+        if (StringUtils.isNotEmpty(response)) {
             try {
                 JSONObject mainObj = new JSONObject(response);
                 String status = mainObj.getString("status");
-                if (status.equalsIgnoreCase(Constants.SUCCESS)){
+                if (status.equalsIgnoreCase(Constants.SUCCESS)) {
                     JSONArray doctorList = mainObj.getJSONArray("doctors");
-                    if (doctorList.length() > 0){
+                    Log.e("DocList", ""+doctorList.length());
+                    if (doctorList.length() > 0) {
                         UpdateDoctorList(doctorList);
-                    }else {
+                    } else {
 
                     }
                 }
@@ -530,19 +532,19 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         }
     }
 
-    public void UpdateDoctorList(JSONArray doctorList){
+    public void UpdateDoctorList(JSONArray doctorList) {
         mDoctorspinnerValues.clear();
-        for (int i = 0; i<doctorList.length(); i++) {
+        for (int i = 0; i < doctorList.length(); i++) {
             try {
                 mDoctorspinnerValues.add(new Doctor(doctorList.getJSONObject(i)));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
-        if (mDoctorspinnerValues.size() > 0) {
+       // if (mDoctorspinnerValues.size() > 0) {
             DoctorListAdapter adapter = new DoctorListAdapter(this, R.layout.custom_spinner_view, mDoctorspinnerValues);
             doctorSpinner.setAdapter(adapter);
-        }
+       // }
     }
 
     public void ShowDialog() {
@@ -553,7 +555,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mDialog.setCancelable(true);
         mDialog.show();
         TextView message = (TextView) mDialog.findViewById(R.id.text);
-        message.setText("You will be charged 40$ for the calling. Do you want to continue.");
+        message.setText(R.string.call_charge_alert_msg);
         LinearLayout mainWrapper = (LinearLayout) mDialog.findViewById(R.id.mainWrapper);
         Button cancelBtn = (Button) mDialog.findViewById(R.id.cancel_logout_btn);
         Button okBtn = (Button) mDialog.findViewById(R.id.logout_yes_btn);
@@ -562,12 +564,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             @Override
             public void onClick(View v) {
                 mDialog.dismiss();
-//                String login = mSharePreferences.getQBEmail();
-//                String password ="password" ;
-//                Utils.showProgress(MainActivity.this);
-//                startIncomeCallListenerService(login, password, Constants.LOGIN);
-
-                startActivity(new Intent(MainActivity.this, PaymentOptionActivity.class));
+                if (!mSharePreferences.isCardDetailsAvailable()) {
+                    startActivity(new Intent(MainActivity.this, PaymentOptionActivity.class));
+                }
             }
         });
 
@@ -578,5 +577,17 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             }
         });
 
+    }
+
+    public void startIncomeCallListenerService(String login, String password, int startServiceVariant, String normalCall){
+        Intent tempIntent = new Intent(this, IncomeCallListenerService.class);
+        PendingIntent pendingIntent = createPendingResult(Constants.LOGIN_TASK_CODE, tempIntent, 0);
+        Intent intent = new Intent(this, IncomeCallListenerService.class);
+        intent.putExtra(Constants.USER_LOGIN, login);
+        intent.putExtra(Constants.USER_PASSWORD, password);
+        intent.putExtra(Constants.START_SERVICE_VARIANT, startServiceVariant);
+        intent.putExtra(Constants.PARAM_PINTENT, pendingIntent);
+        intent.putExtra(Constants.BundleKeys.CALL_TYPE, normalCall);
+        startService(intent);
     }
 }

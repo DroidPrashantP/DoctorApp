@@ -14,17 +14,27 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import com.midoconline.app.R;
+import com.midoconline.app.Util.Constants;
 
 public class AskForRegistration extends AppCompatActivity {
 
     Button mBtnRegisteredDoctor, mWantToTegistered;
+    private RelativeLayout mMainLayout;
+    String mUserType;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ask_for_registration);
         setToolbar();
+
+        Bundle bundle = getIntent().getExtras();
+        if (bundle!=null){
+            mUserType = bundle.getString(Constants.BundleKeys.USERTYPE);
+        }
+        mMainLayout = (RelativeLayout) findViewById(R.id.mainContainer);
         mBtnRegisteredDoctor = (Button) findViewById(R.id.btn_registered_doctor);
         mWantToTegistered = (Button) findViewById(R.id.btn_want_to_registered);
 
@@ -32,7 +42,13 @@ public class AskForRegistration extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(AskForRegistration.this, SignInActivity.class);
-                startActivity(intent);
+                if (mUserType.equalsIgnoreCase(Constants.BundleKeys.PATIENT)) {
+                    intent.putExtra(Constants.BundleKeys.USERTYPE,Constants.BundleKeys.PATIENT);
+                    startActivity(intent);
+                }else {
+                    intent.putExtra(Constants.BundleKeys.USERTYPE,Constants.BundleKeys.DOCTOR);
+                    startActivity(intent);
+                }
             }
         });
 
@@ -40,9 +56,16 @@ public class AskForRegistration extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(AskForRegistration.this, SignUpActivity.class);
-                startActivity(intent);
+                if (mUserType.equalsIgnoreCase(Constants.BundleKeys.PATIENT)) {
+                    intent.putExtra(Constants.BundleKeys.USERTYPE,Constants.BundleKeys.PATIENT);
+                    startActivity(intent);
+                }else {
+                    intent.putExtra(Constants.BundleKeys.USERTYPE,Constants.BundleKeys.DOCTOR);
+                    startActivity(intent);
+                }
             }
         });
+        mMainLayout.setBackgroundResource(R.drawable.bg);
     }
 
     @Override

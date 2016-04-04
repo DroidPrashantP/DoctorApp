@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -34,13 +35,14 @@ public class AnswerEmeregencyCallScreen extends AppCompatActivity implements Vie
     private Spinner mMenuSpinner;
     private String[] mMenuspinnerValues = { "Account", "History"};
     private SharePreferences mSharePreferences;
+    private RelativeLayout mMainLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_answer_emeregency_call_screen);
         mSharePreferences = new SharePreferences(this);
         setToolbar();
-
+        mMainLayout = (RelativeLayout) findViewById(R.id.mainContainer);
         mBtnAnsEmergencyCall = (Button) findViewById(R.id.btn_emergency_call);
         mBtnAnswerCall = (Button) findViewById(R.id.btn_answercall);
         mBtnHistory = (Button) findViewById(R.id.btn_history);
@@ -60,6 +62,8 @@ public class AnswerEmeregencyCallScreen extends AppCompatActivity implements Vie
 
             }
         });
+
+        mMainLayout.setBackgroundResource(R.drawable.bg);
     }
 
     @Override

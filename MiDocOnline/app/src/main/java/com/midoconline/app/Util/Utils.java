@@ -3,11 +3,18 @@ package com.midoconline.app.Util;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.support.design.widget.Snackbar;
+import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
-
 import com.midoconline.app.R;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * Created by Prashant on 6/10/15.
@@ -58,4 +65,26 @@ public class Utils {
         diaBuilder.setCancelable(true);
     }
 
+
+    public static String GetHashKey(Context context){
+        // Add code to print out the key hash
+        String hashKey = "";
+        try {
+            PackageInfo info = context.getPackageManager().getPackageInfo(
+                    "com.facebook.samples.hellofacebook",
+                    PackageManager.GET_SIGNATURES);
+            MessageDigest md;
+            for (Signature signature : info.signatures) {
+                md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                Log.d("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
+                hashKey = Base64.encodeToString(md.digest(), Base64.DEFAULT);
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+
+        } catch (NoSuchAlgorithmException e) {
+
+        }
+        return hashKey;
+    }
 }

@@ -11,6 +11,18 @@ public interface Constants {
     String APP_ID = "35038";
     String AUTH_KEY = "yVQnaBUHBuHHr9B";
     String AUTH_SECRET = "4TWZa9b4vRSeudf";
+    String ACCOUNT_KEY = "HafiUn7qpT2aoucko1Vu";
+
+    /*
+   * Change this to your publishable key.
+   *
+   * You can get your key here: https://manage.stripe.com/account/apikeys
+   */
+//    public static final String PUBLISHABLE_KEY = "sk_test_0mwlAmQVrlBfQJ5sHlgmXQQy";  // test key
+//    public static final String PUBLISHABLE_KEY = "pk_test_rtY8DogK3CGi5lBmPTZVA7AZ"; // publishable test key
+//    public static final String PUBLISHABLE_KEY = "sk_live_LQlW1Ljf8PpqTPGeLtPveDvs"; //  live key
+    public static final String PUBLISHABLE_KEY = "pk_live_cM3pk51kT0hLVYa0SIBGB8BB";  // live publishable key
+
 
     int NOTIFICATION_FORAGROUND = 1004;
     int NOTIFICATION_CONNECTION_LOST = 1005;
@@ -69,6 +81,8 @@ public interface Constants {
     String SUCCESS = "Success";
     String ADULT_EMERGENCY = "adult_emergency";
     String KID_EMERGENCY = "kide_emergency";
+    String NORMAL_CALL = "normal_call";
+    String OPPONANT_ID = "opponant_id";
 
     public enum CALL_DIRECTION_TYPE {
         INCOMING,
@@ -87,6 +101,7 @@ public interface Constants {
         String KEY = "key";
         String AUTH_TOKEN = "authentication_token";
         String USER_NAME = "user_name";
+        String FULL_NAME = "full_name";
         String ID = "user_id";
         String EMAIL = "email";
         String SPECIALIST = "specialist";
@@ -112,6 +127,7 @@ public interface Constants {
         String DOCTOR = "doctor";
         String STRIPE_KEY = "stripe_key";
         String EMERGENCY_TAG = "emergency_tag";
+        String HISTORY_ID = "id";
 
         String FACEBOOK_ID = "id";
         String FACEBOOK_EMAIL_ID = "email";
@@ -132,6 +148,12 @@ public interface Constants {
         String MODE_TWITTER = "twitter";
         String MODE_GOOGLE = "open_id";
         String MODE_EMAIL = "email";
+
+        String CARD_NUMBER = "card_number";
+        String CARD_EXPIRY_MONTH = "card_expiry_month";
+        String CARD_EXPIRY_YEAR = "card_expiry_year";
+        String CARD_CVV = "card_cvv";
+        String IsCardDetailAvailble = "isCardDetailAvailable";
     }
 
     interface BundleKeys {
@@ -140,11 +162,16 @@ public interface Constants {
         String DOCTOR = "Doctor";
         String FACEBOOK_PARAM_KEYS = "id,name,email,picture.type(large),cover";
         String FIELDS = "fields";
+        String NORMAL_CALL = "normal call";
+        String HISTORY_CALL = "history call";
+        String CALL_TYPE = "call_type";
+        String CREATE_USER_SESSION_WITH_QB = "Create_session_with_qb";
 
+        String OPPONANT_NAME = "OpponantName";
     }
 
     interface URL {
-        String BASE_URL = "https://midoconline.com/";
+        String BASE_URL = "https://www.midoconline.com/";
         String PATIENT_SIGNUP_URL = BASE_URL + "tokens/user_sign_up";
         String DOCTOR_SIGNUP_URL = BASE_URL + "tokens/doctor_sign_up";
         String SIGNINSTEPONE_URL = BASE_URL + "tokens/get_key.json";
@@ -155,9 +182,14 @@ public interface Constants {
         String DOCTOR_PROFILE_OPTION_URL = BASE_URL + "save_card_details";
         String FORGOTPASSWORD_URL = BASE_URL + "forget_password_request";
         String FACEBOOK_URL = BASE_URL + "tokens/facebook_authentication";
-        String UPDATE_PROFILE = BASE_URL + "update_details";
-        String GET_DOCTOR_LIST = BASE_URL + "view_doctors_list";
+        String UPDATE_PROFILE = BASE_URL + "update_details.json";
+        String GET_DOCTOR_LIST = BASE_URL + "view_doctors_list.json";
 
+        String UPDATE_HISTORY_BEFORE_VIDEO_CALL = BASE_URL + "video_chats";
+        String UPDATE_HISTORY_AFTER_VIDEO_CALL = BASE_URL + "video_chats";
+        String UPDATE_HISTORY_END_VIDEO_CALL = BASE_URL + "video_chats";
+        String DOCOTR_HISTORY = BASE_URL + "doctor_history.json";
+        String PATIENT_HISTORY = BASE_URL + "patient_history.json";
     }
 
     interface QuickBox {
@@ -176,5 +208,8 @@ public interface Constants {
     interface ApiType {
         String ALL_USER_API = "all Users";
 
+    }
+
+    public class SupportKeys {
     }
 }

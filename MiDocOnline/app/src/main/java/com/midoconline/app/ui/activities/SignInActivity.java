@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -22,6 +23,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.midoconline.app.R;
+import com.midoconline.app.Util.Constants;
 import com.midoconline.app.Util.SharePreferences;
 import com.midoconline.app.Util.StringUtils;
 import com.midoconline.app.Util.Utils;
@@ -39,6 +41,8 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     private Button mSignInBtn;
     private TextInputLayout mEmailTextInput, mPasswordTextInput;
     private SharePreferences mSharePreferences;
+    private RelativeLayout mainContainer;
+    private RelativeLayout mMainLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,15 +51,20 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         mSharePreferences = new SharePreferences(this);
         IntiView();
         setToolbar();
+        mainContainer.setBackgroundResource(R.drawable.bg);
     }
 
     private void IntiView() {
+        mainContainer = (RelativeLayout) findViewById(R.id.mainContainer);
         mEdtEmail = (EditText) findViewById(R.id.edt_email);
         mEdtPassword = (EditText) findViewById(R.id.edt_password);
         mEmailTextInput = (TextInputLayout) findViewById(R.id.til_email);
         mPasswordTextInput = (TextInputLayout) findViewById(R.id.til_password);
         mSignInBtn = (Button) findViewById(R.id.btn_sign_in);
         mSignInBtn.setOnClickListener(this);
+
+        mMainLayout = (RelativeLayout) findViewById(R.id.mainContainer);
+        mMainLayout.setBackgroundResource(R.drawable.bg);
     }
 
     @Override
@@ -147,7 +156,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     public void ExecutePostRequestForLogin(final String secret_key, final String key){
 
         RequestQueue queue = Volley.newRequestQueue(this);
-        StringRequest stringrequest = new StringRequest(Request.Method.POST,"http://52.74.206.181:8010/tokens.json", new Response.Listener<String>() {
+        StringRequest stringrequest = new StringRequest(Request.Method.POST, Constants.URL.SIGNIN_URL, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Utils.closeProgress();

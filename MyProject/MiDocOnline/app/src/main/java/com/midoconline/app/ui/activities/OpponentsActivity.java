@@ -19,12 +19,14 @@ import com.midoconline.app.R;
 import com.midoconline.app.Util.Constants;
 import com.midoconline.app.Util.NetworkManager;
 import com.midoconline.app.Util.SharePreferences;
+import com.midoconline.app.Util.StringUtils;
 import com.midoconline.app.Util.Utils;
 import com.midoconline.app.api.UserApi;
 import com.midoconline.app.beans.DataHolder;
 import com.midoconline.app.ui.adapters.OpponentsAdapter;
 import com.quickblox.chat.QBChatService;
 import com.quickblox.core.QBEntityCallback;
+import com.quickblox.core.exception.QBResponseException;
 import com.quickblox.core.request.QBPagedRequestBuilder;
 import com.quickblox.users.QBUsers;
 import com.quickblox.users.model.QBUser;
@@ -54,6 +56,8 @@ public class OpponentsActivity extends BaseActivity implements View.OnClickListe
     private UserApi mUserApi;
     private SharePreferences mSharePreferences;
     private LinearLayout mMainLayout;
+    private boolean isFromHistory = false;
+    private String opponantHistoryEmail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +66,11 @@ public class OpponentsActivity extends BaseActivity implements View.OnClickListe
         mSharePreferences = new SharePreferences(this);
         mUserApi = new UserApi(OpponentsActivity.this, this);
         opponentsListView = (ListView) findViewById(R.id.opponentsList);
+        Bundle bundle = getIntent().getExtras();
+        if (bundle!=null) {
+            isFromHistory = bundle.getBoolean("isFromHistory");
+            opponantHistoryEmail = bundle.getString("opponentEmail");
+        }
 
         setToolbar();
         initUI();
@@ -91,6 +100,7 @@ public class OpponentsActivity extends BaseActivity implements View.OnClickListe
             QBUsers.getUsers(requestBuilder, new QBEntityCallback<ArrayList<QBUser>>() {
                 @Override
                 public void onSuccess(ArrayList<QBUser> qbUsers, Bundle bundle) {
+                    Log.e("Respose", qbUsers.toString());
                     ArrayList<QBUser> orderedUsers = reorderUsersByName(qbUsers);
                     setOpponentsList(orderedUsers);
                     prepareUserList(opponentsList, orderedUsers);
@@ -147,27 +157,73 @@ public class OpponentsActivity extends BaseActivity implements View.OnClickListe
 
     private void prepareUserList(ListView opponentsList, List<QBUser> users) {
         QBUser currentUser = QBChatService.getInstance().getUser();
-
-
-
-//        ArrayList<QBUser> nonAppUsers = new ArrayList<>();
-//        for (QBUser nonAppUser : users) {
-//            if (!DataHolder.getIdsAiiUsers().contains(nonAppUser.getId())) {
-//                nonAppUsers.add(nonAppUser);
-//            }
-//        }
-
         if (users.contains(currentUser)) {
             users.remove(currentUser);
         }
 
-//        if (users.containsAll(nonAppUsers)) {
-//            users.removeAll(nonAppUsers);
-//        }
+        Log.e("DoctorList", users.toString());
+        ArrayList<QBUser> newUserList = new ArrayList<QBUser>();
+        for (int i = 0; i< users.size(); i++){
+            QBUser qbUser = users.get(i);
+            if (isFromHistory) {
+                if (opponantHistoryEmail.equalsIgnoreCase(qbUser.getEmail())) {
+                    newUserList.add(qbUser);
+                }
+            }else {
+                if (mSharePreferences.getEmergencyTag().equals(Constants.KID_EMERGENCY)) {
+                    Log.e("Tag", "" + qbUser.getTags());
+                    if (qbUser.getTags().toString().replace("[", "").replace("]", "").equals("kids")) {
+                        newUserList.add(qbUser);
+                    }
+                }
+                if (mSharePreferences.getEmergencyTag().equals(Constants.ADULT_EMERGENCY)) {
+                    Log.e("Tag", "" + qbUser.getTags());
+                    if (qbUser.getTags().toString().replace("[", "").replace("]", "").equals("adult")) {
+                        newUserList.add(qbUser);
+                    }
+                }
+                if (mSharePreferences.getEmergencyTag().equals(Constants.NORMAL_CALL)) {
+                    Log.e("Tag", "" + qbUser.getTags());
+                    if (mSharePreferences.getUserType().equals(Constants.BundleKeys.DOCTOR)) {
+                        Log.e("CustomData", "" + qbUser.getCustomData());
+                        if (StringUtils.isNotEmpty(qbUser.getCustomData())) {
+                            if (qbUser.getCustomData().equalsIgnoreCase(Constants.BundleKeys.PATIENT)) {
+                                newUserList.add(qbUser);
+                            }
+                        }
+                    } else {
+                        if (StringUtils.isNotEmpty(qbUser.getCustomData())) {
+                            Log.e("Qb User", "" +qbUser.getCustomData().replace("ó","o") + " -- "+ qbUser.getLogin());
+                            Log.e("local Data", "" + mSharePreferences.getMedicalSpecialist().replace("ó","o")+" ---- "+mSharePreferences.getSelectedDoctor());
 
+//                            if (qbUser.getCustomData().equalsIgnoreCase(mSharePreferences.getMedicalSpecialist())) {
+//                                Log.e("Custom Data", "" +mSharePreferences.getSelectedDoctor());
+                                if ((qbUser.getCustomData().replace("ó","o").equalsIgnoreCase(mSharePreferences.getMedicalSpecialist().replace("ó","o")) && qbUser.getLogin().equalsIgnoreCase(mSharePreferences.getSelectedDoctor())) || qbUser.getLogin().equalsIgnoreCase(mSharePreferences.getSelectedDoctor())) {
+                                    newUserList.add(qbUser);
+                                }else {
+
+                                }
+//                            } else {
+//                               // Log.e("Name", "" + qbUser.getLogin());
+//                            }
+                        }
+                    }
+
+                }
+            }
+        }
+        DataHolder.usersList = newUserList;
         // Prepare users list for simple adapter.
-        opponentsAdapter = new OpponentsAdapter(this, users);
+        opponentsAdapter = new OpponentsAdapter(this, newUserList);
         opponentsListView.setAdapter(opponentsAdapter);
+
+        if (DataHolder.usersList.size() < 0){
+            btnAudioCall.setVisibility(View.GONE);
+            btnVideoCall.setVisibility(View.GONE);
+        }else {
+            btnAudioCall.setVisibility(View.VISIBLE);
+            btnVideoCall.setVisibility(View.VISIBLE);
+        }
     }
 
     private void initUI() {
@@ -186,7 +242,6 @@ public class OpponentsActivity extends BaseActivity implements View.OnClickListe
 
         if (opponentsAdapter.getSelected().size() == 1) {
             QBRTCTypes.QBConferenceType qbConferenceType = null;
-
             //Init conference type
             switch (v.getId()) {
                 case R.id.btnAudioCall:
@@ -196,13 +251,12 @@ public class OpponentsActivity extends BaseActivity implements View.OnClickListe
 
                 case R.id.btnVideoCall:
                     qbConferenceType = QBRTCTypes.QBConferenceType.QB_CONFERENCE_TYPE_VIDEO;
-                    setActionButtonsClickable(false);
+                   // setActionButtonsClickable(false);
                     break;
             }
 
-            Map<String, String> userInfo = new HashMap<>();
-            userInfo.put("any_custom_data", "some data");
-            userInfo.put("my_avatar_url", "avatar_reference");
+            HashMap<String, String> userInfo = new HashMap<>();
+            userInfo.put(Constants.BundleKeys.OPPONANT_NAME, mSharePreferences.getUserFullName());
 
             Log.d(TAG, "QBChatService.getInstance().isLoggedIn() = " + String.valueOf(QBChatService.getInstance().isLoggedIn()));
 
@@ -215,6 +269,7 @@ public class OpponentsActivity extends BaseActivity implements View.OnClickListe
             } else if (isWifiConnected && QBChatService.getInstance().isLoggedIn()) {
                 CallActivity.start(this, qbConferenceType, getOpponentsIds(opponentsAdapter.getSelected()),
                         userInfo, Constants.CALL_DIRECTION_TYPE.OUTGOING);
+                finish();  /// to close activity
             }
 
         } else if (opponentsAdapter.getSelected().size() > 1) {
@@ -225,7 +280,6 @@ public class OpponentsActivity extends BaseActivity implements View.OnClickListe
     }
 
     private void setActionButtonsClickable(boolean isClickable) {
-
         btnVideoCall.setClickable(isClickable);
         btnAudioCall.setClickable(isClickable);
     }
@@ -306,7 +360,7 @@ public class OpponentsActivity extends BaseActivity implements View.OnClickListe
 
     @Override
     public void onBackPressed() {
-        minimizeApp();
+        super.onBackPressed();
     }
 
     private void showLogOutDialog() {
@@ -364,9 +418,7 @@ public class OpponentsActivity extends BaseActivity implements View.OnClickListe
     public void onComplete(JSONObject jsonObject, String ApiType) {
         try {
             if (ApiType.equals(Constants.ApiType.ALL_USER_API)) {
-
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }

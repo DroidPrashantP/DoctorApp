@@ -1,7 +1,9 @@
 <RelativeLayout
+    android:id="@+id/mainContainer"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <include
         android:id="@+id/toolbar_wrapper"
@@ -62,6 +64,31 @@
             android:textColor="@color/white"
             android:textSize="@dimen/text_size_large"
             android:textStyle="bold" />
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginTop="@dimen/margin_xlarge"
+            android:gravity="center_vertical"
+            android:padding="@dimen/padding_normal">
+
+
+            <com.facebook.login.widget.LoginButton
+                android:id="@+id/facebookLoginButton"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:paddingBottom="@dimen/padding_large"
+                android:paddingTop="@dimen/padding_large"
+                android:textAllCaps="true"
+                app:com_facebook_login_text="@string/facebook_login" />
+
+
+            <!--<com.google.android.gms.common.SignInButton-->
+                <!--android:id="@+id/google_sign_in_button"-->
+                <!--android:layout_height="match_parent"-->
+                <!--android:layout_weight="1" />-->
+
+        </TableRow>
 
     </LinearLayout>
 </RelativeLayout>
